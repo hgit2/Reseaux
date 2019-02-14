@@ -18,10 +18,10 @@ plot_dispo=False # à gérer PLUS TARD
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 
-def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1): # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'annalyse de la sequence ADN.
+def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1,con): # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'annalyse de la sequence ADN.
     "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet d'effectuer une etude de sequence nucleique. Cette etude consiste en un calcul du pourcentage de C+G et de CpG dans la sequence entiere, et en un calcule du rapport CpG, du pourcentage de C+G, et du nombre de CpG par fenetre glissante de deux cents nucleotides ainsi qu'une conclsion sur la presence ou non d'ilots CpG. La procedure cree un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle engendre sous certaines conditions. Elle prend en arguments une description et la sequence correspondante au minimum. En troisieme argument elle prend la composition de la sequence (compo=) sous forme de dictionnaire, par defaut cette composition est calculee dans la procedure. De meme en quatrieme argument elle prend la liste des caracteres composants la sequence (keys=) (chacun ecrit entre guillemets), par defaut cette liste est calculee par la procedure. En dernier argument elle prend le boleen plot_dispo qui par defaut vaut True si le poste de tavail dispose de l'installation du module 'matplotlib' et False sinon, si l'utilisateur choisit d'entree plot_dispo=True en argument il doit lui meme s'assurere de cette installation au prealable, si au contraire il rentre plot_dispo=False, les graphiques ne seront pas generes."  
     if compo==-1: # Permet une utilisation dans un cas plus general dans lequel l'utilisateur ne disposerait pas de la composition de la sequnece.
-        compo=an.composition(seq)
+        compo=an.composition(seq,con)
     if keys==-1: # Permet une utilisation dans un cas plus general dans lequel l'utilisateur ne disposerait pas d'une liste des caractères composants la sequnece.
         keys=[]
         for key in compo.keys():
@@ -41,7 +41,7 @@ def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1): # Permet d'obtenir les
             numero_fichier+=1
             nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier) # Si le fichier "nom_fichier.py" existe on change de nom pour ne pas l'ecraser.
     sortie=open(nom_fichier+"(%i).py" % numero_fichier,'a')
-    CG,pourcentCpG=an.contenu_C_et_G_et_nb_CpG(seq,comp=compo) # Recuperation du pourcentage de C+G dans la sequence.
+    CG,pourcentCpG=an.contenu_C_et_G_et_nb_CpG(seq,comp=compo,con) # Recuperation du pourcentage de C+G dans la sequence.
     pourcentCpG=pourcentCpG[0]/len(seq)*100 # Recuperation  de nombre de "CG" dans la sequence.
     num_fenetre=[]
     sortie.write("\tC+G(%)\tCpG(%)") # Redaction des entetes du tableau resultat consernant l'etude de la sequence entiere.
@@ -53,7 +53,7 @@ def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1): # Permet d'obtenir les
     sortie.write(resultats)
     if len(seq)>=200: # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'annalyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
         sortie.write("\n \n \nFenetres\tC+G(%)\tCpG\tRapport CpG\tIlot CpG\n") # Redaction des entetes du tableau resultat consernant l'etude de la sequence par fenetres glissantes. 
-        rapportCpG,CpGfenetre,CGfenetre=an.rapport_CpG_nb_CpG_contenu_C_et_G(seq,200)# Recuperation du porcentage de C+G dans chaque fenetre, du nombre de "CG" et du rapport CpG.
+        rapportCpG,CpGfenetre,CGfenetre=an.rapport_CpG_nb_CpG_contenu_C_et_G(seq,200,con)# Recuperation du porcentage de C+G dans chaque fenetre, du nombre de "CG" et du rapport CpG.
         ilot_CpG=False
         plt_rapportCpG=True
         for i,ele in enumerate(CGfenetre): # On parcours l'une des liste de resultat de l'annalyse par fenetre, elles ont toutes la meme taille.
@@ -118,7 +118,7 @@ def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1): # Permet d'obtenir les
 def resultat_prot(des,seq,compo,keys,plot_dispo=-1, con): # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'annalyse de la sequence proteique. (Fonctionnement tres similaire a "resultat_ADN")
     "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet d'effectuer une etude de sequence proteique. Cette etude consiste en un calcul du nombre d'acide amines hydrophobe presents, du nombre d'acide amines charges presents, et de la charge net de la sequence entriere, et en un calcul de l'hydrophobicite moyenne dans chaque fenetre glissante de neuf acides amines. La procedure cree un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle engendre sous certaines conditions. Elle prend en arguments une description et la sequence correspondante au minimum. En troisieme argument elle prend la composition de la sequence (compo=) sous forme de dictionnaire, par defaut cette composition est calculee dans la procedure. De meme en quatrieme argument elle prend la liste des caracteres composants la sequence (keys=) (chacun ecrit entre guillemets), par defaut cette liste est calculee par la procedure. En dernier argument elle prend le boleen plot_dispo qui par defaut vaut True si le poste de tavail dispose de l'installation du module 'matplotlib' et False sinon, si l'utilisateur choisit d'entree plot_dispo=True en argument il doit lui meme s'assurere de cette installation au prealable, si au contraire il rentre plot_dispo=False, les graphiques ne seront pas generes." 
     if compo==-1: 
-        compo=an.composition(seq)
+        compo=an.composition(seq,con)
     if keys==-1: 
         keys=[]
         for key in compo.keys():
@@ -196,7 +196,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
         keys=[]
         valeurs=[]
         if type_seq=="": # Seulement si c'est la premiere annalyse ou que l'utilisateur a demander a en commencer une nouvelle.
-            des,seq,type_seq=rs.entree(con, addr)
+            des,seq,type_seq=rs.entree(con,addr)
             print("sortie de entree")
             des=des.replace(",","_") # Ensemble de commande permettant de creer un nom de fichier sans caracteres compromettants.
             des=des.replace(".","")
