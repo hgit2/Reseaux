@@ -18,7 +18,7 @@ def composition(seq): # Donne la composition de la sequence en nucleotides. (Fon
             dico[ele]=1    
     return(dico)
 
-def contenu_C_et_G(seq,taille=-1, con): # Renvoie le poucentage de C+G contenue dans la sequence "seq" (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
+def contenu_C_et_G(seq, con, taille=-1): # Renvoie le poucentage de C+G contenue dans la sequence "seq" (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
     "Cette fonction calcule le pourcentage de C+G contenue dans une sequence (premier argument) (par defaut) ou dans toutes les fenetres glissante de longueurs donnees (deuxieme argument)."
     if taille==-1:
         taille=len(seq)
@@ -44,7 +44,7 @@ def contenu_C_et_G(seq,taille=-1, con): # Renvoie le poucentage de C+G contenue 
         return('')
 
 
-def nb_CpG(seq,taille=-1, con): # Renvoie le nombre de couple CG presents dans la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
+def nb_CpG(seq,con, taille=-1): # Renvoie le nombre de couple CG presents dans la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
     "Cette fonction calcule le nombre de couple CG presents dans une sequence donnee en premier argument (par defaut) ou dans toutes les fenetres glissante de longueurs donnees en deuxieme argument."
     if taille==-1:
         taille=len(seq)
@@ -67,7 +67,7 @@ def nb_CpG(seq,taille=-1, con): # Renvoie le nombre de couple CG presents dans l
         con.sendall("Changez de sequence ou de taille de fenetre.\n---------------\n".encode())
         return('')
 
-def contenu_C_et_G_et_nb_CpG(seq,taille=-1,comp=-1, con): # Renvoie le poucentage de C+G et le nombre de couple CG contenue dans la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
+def contenu_C_et_G_et_nb_CpG(seq,con,taille=-1,comp=-1): # Renvoie le poucentage de C+G et le nombre de couple CG contenue dans la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
     "Cette fonction calcule le pourcentage de C+G (premiere liste retournee) le nombre de couple CG (deuxieme liste retournee) presents dans une sequence donnee en premier argument (par defaut) ou dans toutes les fenetres glissante de longueurs donnees en deuxieme argument."
     if taille==-1:
         taille=len(seq)
@@ -105,7 +105,7 @@ def contenu_C_et_G_et_nb_CpG(seq,taille=-1,comp=-1, con): # Renvoie le poucentag
         con.sendall("Changez de sequence ou de taille de fenetre.\n---------------\n".encode())
         return('','')
 
-def rapport_CpG(seq,taille=-1, con): # Renvoie le rapport CpG de la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
+def rapport_CpG(seq,con,taille=-1): # Renvoie le rapport CpG de la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
     "Cette fonction calcule le rapport CpG d'une sequence donnee en premier argument (par defaut) ou dans toutes les fenetres glissante de longueurs donnees en deuxieme argument."
     if taille==-1:
         taille=len(seq)
@@ -128,7 +128,7 @@ def rapport_CpG(seq,taille=-1, con): # Renvoie le rapport CpG de la sequence (pa
         con.sendall("Changez de sequence ou de taille de fenetre.\n---------------\n".encode())
         return('')
 
-def rapport_CpG_nb_CpG_contenu_C_et_G(seq,taille=-1,comp=-1, con): # Renvoie le rapportCpG, le nombre observe CpG et le pourcentage de C+G de de la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
+def rapport_CpG_nb_CpG_contenu_C_et_G(seq,con, taille=-1,comp=-1): # Renvoie le rapportCpG, le nombre observe CpG et le pourcentage de C+G de de la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
     "Cette fonction calcule le rapport CpG (premiere liste retournee) le nombre de couple CG (deuxieme liste retournee) le pourcentage de C+G (troisieme liste retournee) presents dans une sequence donnee en premier argument (par defaut) ou dans toutes les fenetres glissante de longueurs donnees en deuxieme argument."
     if taille==-1:
         taille=len(seq)

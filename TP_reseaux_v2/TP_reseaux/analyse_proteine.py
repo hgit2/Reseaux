@@ -83,7 +83,7 @@ def nb_residus_hydrophobes_et_residus_charges_et_chage_net(seq,compo=-1): # Fonc
     nb_aa_charges=nb_aa_charges/len(seq)*100
     return(nb_aa_hydrophobe,nb_aa_charges,charge)
 
-def hydrophobicite_moyenne(seq,taille=-1,compo=-1, con): # Permet de calculer l'hydrophobicite moyenne d'une sequence ou d'une fenetre glissate de taille donnee.
+def hydrophobicite_moyenne(seq,con,taille=-1,compo=-1): # Permet de calculer l'hydrophobicite moyenne d'une sequence ou d'une fenetre glissate de taille donnee.
     "Cette fonction calcule l'hydrophobicite moyenne d'une sequence donnee en premier argument (par defaut) ou dans toutes les fenetres glissante de longueurs donnees en deuxieme argument."
     if taille==-1:
         taille=len(seq)
