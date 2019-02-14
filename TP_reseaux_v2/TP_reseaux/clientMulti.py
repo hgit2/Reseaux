@@ -15,12 +15,15 @@ while 1:
   msg = input('>> ')
 
   # test pour arreter le client python proprement
-  if msg=="": # si on initialise pas msg avec raw_input : comme on utilise NC et pas telnet sur les machines BIM il faut mettre if msg=="\n" pour que ca fonctionne 
+  if msg=="exit()": # si on initialise pas msg avec raw_input : comme on utilise NC et pas telnet sur les machines BIM il faut mettre if msg=="\n" pour que ca fonctionne 
   # mais la comme on initialise raw_input c'est bon puisque raw_input renvoi une chaine vide quand on tape entree
     break
 
+  elif msg=="":
+    s.send("WARNING : empty message".encode())      
+
   # envoi puis reception de la reponse
-  s.send(msg.encode())
+  s.sendall(msg.encode())
  # s.sendall(b"%" %msg.encode())
   data = s.recv(255).decode()
   print(data) # on affiche la reponse

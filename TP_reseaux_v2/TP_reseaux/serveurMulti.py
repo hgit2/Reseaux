@@ -24,7 +24,7 @@ def handle_com(con, addr):
 if __name__ == "__main__":
     try: # Premiere etape 
         socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket.bind(("0.0.0.0",8887))
+        socket.bind(("0.0.0.0",8001))
         socket.listen(1)
         print("Listening")
         while True: 
@@ -43,4 +43,5 @@ if __name__ == "__main__":
             print("Shutting down process %r", process)
             process.terminate()
             process.join()
+        socket.close()
     print("END")
