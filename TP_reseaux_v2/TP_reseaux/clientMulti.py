@@ -1,9 +1,16 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#                                                                Projet Réseaux 4BIM
+#                                                             Récupération de sequences fasta
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+
 import socket 
 import select
 import time
 import sys
-
-# Aide :https://realpython.com/python-sockets/
 
 
 #creation de la socket puis connexion
