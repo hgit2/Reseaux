@@ -12,6 +12,10 @@ s.connect(("127.0.0.1",int(sys.argv[1])))
 
 
 while 1:
+  print("before data")  
+  data = s.recv(1024).decode()
+  print(data) # on affiche la reponse
+  
   msg = input('>> ')
 
   # test pour arreter le client python proprement
@@ -20,13 +24,12 @@ while 1:
     break
 
   elif msg=="":
-    s.send("WARNING : empty message".encode())      
+    s.send("WARNING : empty message".encode())    
 
   # envoi puis reception de la reponse
   s.sendall(msg.encode())
  # s.sendall(b"%" %msg.encode())
-  data = s.recv(255).decode()
-  print(data) # on affiche la reponse
+  print("after sendall")
 
 # fermeture de la connexion
 s.close()
