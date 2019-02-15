@@ -8,7 +8,6 @@
 
 
 import analyse_seq_fasta as asf
-
 import multiprocessing
 import socket
 import sys
