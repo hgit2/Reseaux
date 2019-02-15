@@ -108,5 +108,6 @@ def hydrophobicite_moyenne(seq,con,taille=-1,compo=-1): # Permet de calculer l'h
         return(hydrophobicites)
     else:
         con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+".\n---------------\n".encode())
+        con.shutdown(1)
         return('')
     
