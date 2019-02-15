@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/python3
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -12,20 +13,22 @@ def entree(): # Cette fonction recupere une sequence proteique ou nucleique au f
     "Cette fonction fait appel au module lire_fasta qui doit etre place dans le meme repertoire courant que ce module (recuperation_sequence_fasta), elle permet une interaction avec l'utilisateur qui peut choisir quel type de sequence il souhaite recupere. Finalement cette fonction permet de recuperer une sequence au format fasta et sa description."
     print(" \nSi vous souhaitez etudier une sequence proteique tapez 1.")
     print("Si vous souhaitez etudier une sequence nucleique tapez 2.")
-    print("Pour arreter le programme tapez 4.")
+    print("ADRESSEEEE")
+    print("Pour arreter le programme tapez 4.") 
     type_seq=input("Tapez ici votre choix puis appuyez sur 'entree' : ")
     while type_seq!="1" and type_seq!="2" and type_seq!="4":
         print("\n----------------\nAttention : Votre choix ne correspond a aucune des options proposees. \n")
         print("Attention : Relance du programme\n---------------\n")
         print(" \nSi vous souhaitez etudier une sequence proteique tapez 1.")
         print("Si vous souhaitez etudier une sequence nucleique tapez 2.")
-        print("Pour arreter le programme tapez 4.")
+        print("Pour arreter le programme tapez 4.")   
         type_seq=input("Tapez ici votre choix puis appuyez sur 'entree' : ")
     while type_seq=="1" or type_seq=="2":
         print(" \nSi votre sequence se trouve dans un fichier fasta tapez son nom avec extention, sans guillemet.")
         print("Si votre sequence se trouve dans une fiche fasta en ligne tapez son identifiant sans guillemet.")
         print("Sinon tapez 3.")
         adresse=input("Tapez ici votre choix puis appuyez sur 'entree' : ")
+        print("ADRESSE",adresse)
         if adresse=="3" :
             print("\n----------------\nAttention : Ce programme est inadapte a votre etude.\n\n")
             print("Ce programme permet d'etudier uniquement des sequences proteiques ou nucleiques\nau format fasta.\n")

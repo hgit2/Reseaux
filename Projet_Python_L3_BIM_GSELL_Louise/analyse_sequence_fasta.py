@@ -1,4 +1,5 @@
-﻿#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+#!/usr/bin/python3
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 #                                                                     Projet Python L3 BIM 2017
@@ -11,6 +12,7 @@ import analyse_proteine as ap
 import creation_seq_aleatoires as csa
 import os
 try:
+    
     import matplotlib.pyplot as plt # Permet de tester la presence du module matplotlib sur le poste.
 except ImportError:
     print("---------------\nAttention : Votre poste de travail n'est pas equipe du module matplotlib,\npar consequent le programme ne pourra pas generer de resultats graphiques\nseuls les tableaux de resultats seront generes.\n---------------")
@@ -193,8 +195,7 @@ def resultat_prot(des,seq,compo,keys,plot_dispo=-1): # Permet d'obtenir les tabl
         print("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'analyse sur la sequence entiere a pu etre effectuee.\nLes annalyses par fenetre requierent une sequence de longueur minimum 9 acides amines.\n---------------")
         sortie.close()
 
-
-        
+       
 
 def resultats_analyse_seq(): # Permet d'optenir les resultats de l'annalyse d'une sequence ADN ou proteique sous forme de tableaux et de graphiques  
     "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet de realiser une etude de sequence nucleique ou proteique au format fasta, cette etude constiste dans les deux cas en une evalusation de la composition de la sequence puis en une etude plus specifique au type de la sequence (se referer a resultat_prot.__doc__ pour plus de deatils sur l'etude des sequences proteique et a resultat_ADN.__doc__ pour les sequences nucleique). Cette procedure ne prend aucun argument en entree. Elle genere un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle cree si l'utilisateur le souhaite et que le module 'matplotlib' est installe sur le poste de travail." 

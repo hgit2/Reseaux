@@ -198,12 +198,13 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
         valeurs=[]
         if type_seq=="": # Seulement si c'est la premiere annalyse ou que l'utilisateur a demander a en commencer une nouvelle.
             des,seq,type_seq=rs.entree(con,addr)
+            con.sendall("Recupération réussite. \n".encode())
             print("sortie de entree")
             des=des.replace(",","_") # Ensemble de commande permettant de creer un nom de fichier sans caracteres compromettants.
             des=des.replace(".","")
             des=des.replace(" ","_")
-            des=des.replace("/","")
             des=des.replace("\\","")
+            des=des.replace("/","")
             des=des.replace("|","_")
             if type_seq=="": # Cette condition mene a l'arret du programme.
                 reponse="4"

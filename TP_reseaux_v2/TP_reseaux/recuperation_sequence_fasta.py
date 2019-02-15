@@ -7,7 +7,7 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 
-#import lire_fasta as lf
+import lire_fasta as lf
 import urllib.request
 
 def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucleique au format fasta dans un fichier situe dans le meme dossier que ce module ou sur internet. 
@@ -20,6 +20,7 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
     while type_seq=="1" or type_seq=="2":
         con.sendall(" \nSi votre sequence se trouve dans un fichier fasta tapez son nom avec extention, sans guillemet.\nSi votre sequence se trouve dans une fiche fasta en ligne tapez son identifiant sans guillemet.\nSinon tapez 3.\nTapez ici votre choix puis appuyez sur 'entree' :\n".encode())
         adresse=con.recv(1024).decode()
+        
         if adresse=="3" :
             con.sendall("\n----------------\nAttention : Ce programme est inadapte a votre etude.\n\nCe programme permet d'etudier uniquement des sequences proteiques ou nucleiques\nau format fasta.\nAttention : Relance du programme\n---------------\n\nSi vous souhaitez etudier une sequence proteique tapez 1.\nSi vous souhaitez etudier une sequence nucleique tapez 2\nPour arreter le programme tapez 4.\nTapez ici votre choix puis appuyez sur 'entree' : \n".encode())
             type_seq=con.recv(1024).decode()
@@ -32,18 +33,18 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
         elif type_seq=="2" : # type_seq=="2"
             type_seq="nucl"
         if "." in adresse: # On identifie adresse comme etant un nom de fichier
+            con.sendall("TEST3\n".encode())
             try:
                 print("lire_fasta")
-                description,sequence="a", "b"
-                #description,sequence=lf.lire_fasta(adresse)
+                #description,sequence="a", "b"
+                description,sequence=lf.lire_fasta(adresse) 
             except FileNotFoundError : # Cette erreur remonte si le fichier dont l'adresse est donnee en entree n'existe pas dans l'emplacement du module. 
                 con.sendall("\n----------------\nAttention :\n\nLe fichier est introuvable verifiez qu'il n'y a pas de fautes de frappe.\nAttention : Relance du programme\n---------------\n".encode())
                 description,sequence,type_seq=entree(con, addr) # Permet de redemander les entree a l'utilisateur.
         else : # Si adresse ne contient pas de "." c'est qu'il s'agit d'un identifiant et non d'un nom de fichier
             try:
                 print("lire fasta web")
-                description,sequence="c", "d"
-                #description,sequence=lf.lire_fasta_web(adresse,type_seq)
+                description,sequence=lf.lire_fasta_web(adresse,type_seq)
             except urllib.error.HTTPError : # Si le lien internet n'existe pas.
                 con.sendall("\n----------------\nAttention : Le lien est introuvable\nVerifiez qu'il n'y a pas de faute de frappe\nou que vous n'avez pas oublie l'extention du fichier.\nSinon verifiez que l'identifiant correspond bien a une sequence du type : "+ type_seq +"eique.\nVeuillez modifiez vos entrees en consequence. \nAttention : Relance du programme\n---------------\n".encode())
                 description,sequence,type_seq=entree(con, addr) 

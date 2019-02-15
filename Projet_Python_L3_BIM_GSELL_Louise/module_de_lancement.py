@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/python3
 # GSELL Louise
 print(" \n-> Programme d'analyse de sequences nucleiques et proteiques \n")
