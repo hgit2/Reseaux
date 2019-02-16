@@ -11,6 +11,7 @@ import analyse_ADN as an
 import analyse_proteine as ap
 import creation_seq_aleatoires as csa
 import os
+
 try:
     
     import matplotlib.pyplot as plt # Permet de tester la presence du module matplotlib sur le poste.
@@ -21,6 +22,8 @@ else:
     plt.rcdefaults() # Permet de reinitialiser les parametres par defaut de matplotlib au cas ou ils aient ete modifier
     import numpy as np
     plt_dispo=True # (Variable globale) Si le module matplotlib est insatlle sur le poste la variable plt_dispo prend la valeur True.
+
+
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -34,8 +37,8 @@ def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1): # Permet d'obtenir les
         keys=[]
         for key in compo.keys():
             keys.append(key)
-    if plot_dispo==-1: # Permet une utilisation plus generale pour laquelle l'utilisateur n'aurait pas a choisir s'il souhaite ou non tracer les graphiques.
-        plot_dispo=plt_dispo
+    if plt_dispo==-1: # Permet une utilisation plus generale pour laquelle l'utilisateur n'aurait pas a choisir s'il souhaite ou non tracer les graphiques.
+        plt_dispo=plot_dispo
     nom_fichier="Analyse_seq_nucl"+des           
     fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
     numero_fichier=0
@@ -150,6 +153,7 @@ def resultat_prot(des,seq,compo,keys,plot_dispo=-1): # Permet d'obtenir les tabl
     num_fenetre=[]
     sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
     resultats="\n srquence entiere\t"+str(nb_aa_hydrophobe)+"\t%.3f" % aa_charges +"\t"+str(charge)
+    print('length keys ', len(keys))
     for ele in keys:
         sortie.write("\t"+str(ele))
         resultats+="\t"+str(compo[str(ele)])
@@ -225,10 +229,14 @@ def resultats_analyse_seq(): # Permet d'optenir les resultats de l'annalyse d'un
             sequence=seq # Permet de garder en memoire la sequence de reference de chaque analyse dans la variable 'seq'.
             description=""
         elif type_seq!="":
+
             if reponse=="Initialisation":
+                
                 if premiere_analyse: # Si une analyse identique a deja ete effectuee on ne la refait pas.
+                    print('ok')
+                    print('plt_dispo' , plt_dispo)
                     if plt_dispo: # Pour permettre a l'utilisateur de choisir s'il veut creer des graphiques ou non seulement dans le cas ou le module matplotlib est disponible et donc la creation de graphiques possible.
-                        plot_dispo=input(" \nSi vous souhaitez que le programme trace des graphiques en se basant \nsur l'analyse par fenetre (l'analyse sera plus longue), tapez 1 \nsinon, tapez 2 : ")
+                        plot_dispo=input("Si vous souhaitez que le programme trace des graphiques en se basant \nsur l'analyse par fenetre (l'analyse sera plus longue), tapez 1 \nsinon, tapez 2 : ")
                         while plot_dispo!="1" and plot_dispo!="2":
                             print("\n---------------\nAttention : votre reponse ne correspond a aucune des propositions.\n\nVeuillez reconsiderer votre reponse.\n\nAttention : Relance du programme\n--------------\n")
                             plot_dispo=input(" \nSi vous souhaitez que le programme trace des graphiques en se basant \nsur l'analyse par fenetre (l'analyse sera plus longue), tapez 1 \nsinon, tapez 2 : ")
@@ -237,7 +245,7 @@ def resultats_analyse_seq(): # Permet d'optenir les resultats de l'annalyse d'un
                         else:
                             plot_dispo=False
                     else:
-                        plot_dipo=True
+                        plot_dispo=False
                     seq=ap.code3aa1(sequence) # Permet de passer du code d'acide amines 3 lettres au code 1 lettre si besoin (si 'sequence' est nucleotidique ou deja en code 1 lettre rien ne change.)
                     compo=ap.composition(sequence)
                     for key in compo.keys():

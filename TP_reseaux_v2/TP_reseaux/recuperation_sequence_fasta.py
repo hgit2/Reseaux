@@ -59,6 +59,12 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
                     con.sendall("\n----------------\nAttention : La sequence n'est pas referencee.\nVerifiez qu'il n'y a pas de faute de frappe dans le nom de la sequence.\nSinon verifiez que l'identifiant correspond bien a une sequence du type : "+ type_seq + "eique.\nVeuillez modifiez vos entrees en consequence. \nAttention : Relance du programme\n---------------\n".encode())
                     description,sequence,type_seq=entree(con, addr)
         return(description,sequence,type_seq)
+<<<<<<< HEAD
     con.sendall("\n---------------\nArret du programme\nVous etes deconnecte du serveur\n---------------\n".encode())
     con.shutdown(1)
     return("","","") # Evite la remontee d'une erreur pour non attribution de variable.
+=======
+    con.sendall("\n---------------\nArret du programme\n---------------\n".encode())
+    con.shutdown(1)
+    return("","","") # Evite la remontee d'une erreur pour non attribution de variable.
+>>>>>>> e999d4ec16750e70a9741f4af69bdaaa88d2f6f6
