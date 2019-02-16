@@ -127,40 +127,44 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
         keys=[]
         for key in compo.keys():
             keys.append(key)
-    if plot_dispo==-1:
-        plot_dispo=plt_dispo
-    nom_fichier="Annalyse_seq_prot"+des
-    fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
-    numero_fichier=0
-    while fichier_existe: # Tant que le fichier "nom_fichier.png" existe le nom change.
-        try: 
-            sortie=open(nom_fichier+"(%i).py" % numero_fichier,'r') # Test si le fichier "nom_fichier.py" existe.
-        except FileNotFoundError: 
-            fichier_existe=False
-        else:
-            sortie.close()
-            numero_fichier+=1
-            nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier)
-    sortie=open(nom_fichier+"(%i).py" % numero_fichier,'a') # Ouverture du fichier resultat.
+#    if plot_dispo==-1:
+#        plot_dispo=plt_dispo
+    print("ecriture fichier")
+    con.sendall(des.encode())
+    print("des")
+#    nom_fichier="Annalyse_seq_prot"+des
+#    fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
+#    numero_fichier=0
+#    while fichier_existe: # Tant que le fichier "nom_fichier.png" existe le nom change.
+#        try: 
+#            sortie=open(nom_fichier+"(%i).py" % numero_fichier,'r') # Test si le fichier "nom_fichier.py" existe.
+#        except FileNotFoundError: 
+#            fichier_existe=False
+#        else:
+#            sortie.close()
+#            numero_fichier+=1
+#            nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier)
+#    sortie=open(nom_fichier+"(%i).py" % numero_fichier,'a') # Ouverture du fichier resultat.
     nb_aa_hydrophobe,aa_charges,charge=ap.nb_residus_hydrophobes_et_residus_charges_et_chage_net(seq,compo) # Recuperation les resultats de l'etude de la sequence entiere.
     num_fenetre=[]
-    sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
+#    sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
     resultats="\n sequence entiere\t"+str(nb_aa_hydrophobe)+"\t%.3f" % aa_charges +"\t"+str(charge)
+    con.sendall(keys.encode()) # ATTENTION PB!
     for ele in keys:
-        sortie.write("\t"+str(ele))
+        #sortie.write("\t"+str(ele))
         resultats+="\t"+str(compo[str(ele)])
     resultats=resultats.replace(".",",")
-    sortie.write(resultats)
+    #sortie.write(resultats)
     if len(seq)>=9: # Dans ce "if" recuperation et traitement des resultats par fenetre glissante de 9 acide amines.
         hydrophobicite=ap.hydrophobicite_moyenne(seq,con, 9)
         print(hydrophobicite)
-        sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
+        #sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
         for i,ele in enumerate(hydrophobicite):
             num_fenetre.append(i+1)
             resultatsfenetres=str(i+1)+"\t%.3f" % hydrophobicite[i] +"\n"
             resultatsfenetres=resultatsfenetres.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
-            sortie.write(resultatsfenetres)
-        sortie.close()
+            #sortie.write(resultatsfenetres)
+       #sortie.close()
         if plot_dispo: # Seulement si le module matplotlib est installe sur le poste de traville utilise.
             plt.subplot(212)
             plt.title("Hydrophobicite moyennes de chaque fenetre glissante de 9 acides amines de la sequence")
@@ -200,30 +204,34 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
     while reponse!="4":
         keys=[]
         valeurs=[]
-        if type_seq=="": # Seulement si c'est la premiere annalyse ou que l'utilisateur a demander a en commencer une nouvelle.
+        if type_seq=="": # Seulement si c'est la premiere analyse ou que l'utilisateur a demande a en commencer une nouvelle.
             des,seq,type_seq=rs.entree(con,addr)
-            con.sendall("Recupération réussite. \n".encode())
+            #con.sendall("Recupération réussie. \n".encode())
             print("sortie de entree")
+            print("des, seq, type_seq =", des, seq, type_seq)
             des=des.replace(",","_") # Ensemble de commande permettant de creer un nom de fichier sans caracteres compromettants.
             des=des.replace(".","")
             des=des.replace(" ","_")
             des=des.replace("\\","")
             des=des.replace("/","")
             des=des.replace("|","_")
-            if type_seq=="": # Cette condition mene a l'arret du programme.
-                reponse="4"
-                continue # Permet de passer au tour de boucle while suivant, or reponse="4" donc le programme s'arrete.
-            print("ecriture d'un fichier")
-#            try:
-#                os.mkdir("Analyse_"+des) # Permet de tester si le dossier '"Analyse_"+des' existe.
-#            except FileExistsError:
-#                premiere_analyse=False # Si le dossier existe deja alors l'analyse de la sequence entree existe deja, on ne souhaite pas la refaire inutilement.
-#                print(" \nL'analyse de cette sequence a deja ete effectuee, vous pouvez \napprofondir cette analyse ou effectuer une annalyse sur une nouvelle sequence. \n")
-#            os.chdir("./Analyse_"+des) # Si le dossier existe deja il n'est pas cree et on rentre simplement dedans, sinon il a deja ete creer dans le 'try' et donc on rentre dedans.
+            print("des=", des)
+            #con.sendall("Recupération réussie. \n".encode())
+#            if type_seq=="": # Cette condition mene a l'arret du programme.
+#                reponse="4"
+#                continue # Permet de passer au tour de boucle while suivant, or reponse="4" donc le programme s'arrete.
+#            #print("ecriture d'un fichier")
+##            try:
+##                os.mkdir("Analyse_"+des) # Permet de tester si le dossier '"Analyse_"+des' existe.
+##            except FileExistsError:
+##                premiere_analyse=False # Si le dossier existe deja alors l'analyse de la sequence entree existe deja, on ne souhaite pas la refaire inutilement.
+##                print(" \nL'analyse de cette sequence a deja ete effectuee, vous pouvez \napprofondir cette analyse ou effectuer une annalyse sur une nouvelle sequence. \n")
+##            os.chdir("./Analyse_"+des) # Si le dossier existe deja il n'est pas cree et on rentre simplement dedans, sinon il a deja ete creer dans le 'try' et donc on rentre dedans.
             sequence=seq # Permet de garder en memoire la sequence de reference de chaque analyse dans la variable 'seq'.
             description=""
         elif type_seq!="":
             if reponse=="Initialisation":
+                print("yes")
                 if premiere_analyse: # Si une analyse identique a deja ete effectuee on ne la refait pas.
 #                    if plt_dispo: # Pour permettre a l'utilisateur de choisir s'il veut creer des graphiques ou non seulement dans le cas ou le module matplotlib est disponible et donc la creation de graphiques possible.
 #                        plot_dispo=input(" \nSi vous souhaitez que le programme trace des graphiques en se basant \nsur l'analyse par fenetre (l'analyse sera plus longue), tapez 1 \nsinon, tapez 2 : ")
@@ -236,9 +244,11 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 #                            plot_dispo=False
 #                    else:
 #                        plot_dipo=True
+                    print("genial")
                     seq=ap.code3aa1(sequence) # Permet de passer du code d'acide amines 3 lettres au code 1 lettre si besoin (si 'sequence' est nucleotidique ou deja en code 1 lettre rien ne change.)
-                    
+                    print(seq)
                     compo=ap.composition(sequence)
+                    print(compo)
                     
                     for key in compo.keys():
                         keys.append(key)
@@ -254,8 +264,11 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 #                        plt.title('Composition de la sequence')
                     if type_seq=="prot":
                         plot_dispo = -1 
+                        con.sendall("resultat_prot".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
+                        print("mot cle envoye")
+                        print(des)
                         resultat_prot(des,sequence,compo,keys,plot_dispo, con)
-                        #print("resultat prot")
+
                     else :
 #                        if plot_dispo :
 #                            if "N" in compo:
@@ -264,6 +277,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 #                                plt.text(-1,-len(seq)/5, "La sequence etudiee est composee de "+str(len(seq))+"\nnucleotides." , fontsize=10,color='b', bbox=dict(boxstyle="square,pad=0.3",fc="w",ec="b", lw=1))
                         print("resultat adn")
                         #resultat_ADN(description,sequence,compo,keys,plot_dispo)
+                    reponse=="Termine"
             elif reponse=="1":
                 reponse="Initialisation" # Permet de repartir dans la condition menant a l'analyse de la sequence.
                 type_seq=""
@@ -293,4 +307,4 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
         if reponse=="4":
             con.sendall("\n---------------\nArret du programme\n---------------\n".encode())
             con.shutdown(1)
-    
+            con.close()

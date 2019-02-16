@@ -32,7 +32,7 @@ def handle_com(con, addr):
     finally:
         print("finally : Closed socket")
         con.shutdown(1)
-        #con.close()
+        con.close()
  
  
 if __name__ == "__main__":
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     except:
         print("Unexpected exception")
-    finally: # "Nettoyage" si exception levee
+    finally: # "Nettoyage" si exception leave
         print("Shutting down")
         for process in multiprocessing.active_children():
             print("Shutting down process %r", process)

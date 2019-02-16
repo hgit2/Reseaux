@@ -87,4 +87,5 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
                     description,sequence,type_seq=entree(con, addr)
         return(description,sequence,type_seq)
     con.sendall("\n---------------\nArret du programme\n---------------\n".encode())
+    con.shutdown(1)
     return("","","") # Evite la remontee d'une erreur pour non attribution de variable.
