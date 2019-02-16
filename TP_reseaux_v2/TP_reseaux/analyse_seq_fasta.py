@@ -130,7 +130,9 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
 #    if plot_dispo==-1:
 #        plot_dispo=plt_dispo
     print("ecriture fichier")
-    con.sendall(des.encode())
+    print("des", type(des))
+    con.recv(1024).decode()
+    con.sendall(des.encode()) # n'arrive pas a l'envoyer...
     print("des")
 #    nom_fichier="Annalyse_seq_prot"+des
 #    fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
@@ -149,11 +151,19 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
     num_fenetre=[]
 #    sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
     resultats="\n sequence entiere\t"+str(nb_aa_hydrophobe)+"\t%.3f" % aa_charges +"\t"+str(charge)
-    con.sendall(keys.encode()) # ATTENTION PB!
+    loop=True # mot clé pour attendre de recevoir l'ensemble des cles cote client
+    con.sendall(str(loop).encode())
+    print(str(loop))
     for ele in keys:
         #sortie.write("\t"+str(ele))
+        con.sendall(str(ele).encode())
+        print(str(ele))
         resultats+="\t"+str(compo[str(ele)])
+        con.sendall(str(loop).encode())
+    loop=False #  mot clé signifiant que l'ensemble des cles a ete envoye
+    con.sendall(str(loop).encode())
     resultats=resultats.replace(".",",")
+    con.sendall(resultats.encode())
     #sortie.write(resultats)
     if len(seq)>=9: # Dans ce "if" recuperation et traitement des resultats par fenetre glissante de 9 acide amines.
         hydrophobicite=ap.hydrophobicite_moyenne(seq,con, 9)
@@ -266,7 +276,6 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         plot_dispo = -1 
                         con.sendall("resultat_prot".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
                         print("mot cle envoye")
-                        print(des)
                         resultat_prot(des,sequence,compo,keys,plot_dispo, con)
 
                     else :
