@@ -11,6 +11,18 @@ import analyse_seq_fasta as asf
 import multiprocessing
 import socket
 import sys
+
+import signal
+
+
+stopBoolServ = True # Variable globale
+
+#exemple de function pour traiter les arrets par ctrl+C
+def signal_handler(signal, frame):
+	global stopBoolServ
+	stopBoolServ = False
+	print ('You pressed Ctrl+C! : stopBoolServ = %s'%str(stopBoolServ))
+
  
 def handle_com(con, addr):
     print("process identity %s" %(addr,))
@@ -36,19 +48,41 @@ def handle_com(con, addr):
  
  
 if __name__ == "__main__":
-    try: # Premiere etape 
-        socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket.bind(("0.0.0.0",int(sys.argv[1])))
-        socket.listen(1)
-        print("Listening")
-        while True: 
-            con, addr = socket.accept()
-            print("Got a new connection")
-            process = multiprocessing.Process(target=handle_com, args=(con, addr))
-            process.daemon = True
-            process.start()
-            print("process %s" %process)
+    signal.signal(signal.SIGINT, signal_handler)
+    print("OK")
+    while stopBoolServ :
+        try: # Premiere etape
+            socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            socket.bind(("0.0.0.0",int(sys.argv[1])))
+            socket.listen(1)
+            print("Listening")
+            while True: 
+                con, addr = socket.accept()
+                print("Got a new connection")
+                process = multiprocessing.Process(target=handle_com, args=(con, addr))
+                process.daemon = True
+                process.start()
+                print("process %s" %process)
 
+        except:
+            print("Unexpected exception")
+        finally: # "Nettoyage" si exception levee
+            print("Shutting down")
+            for process in multiprocessing.active_children():
+                print("Shutting down process %r", process)
+                process.terminate()
+                process.join()
+            socket.close()
+
+    print("Shutting down")
+    for process in multiprocessing.active_children():
+        print("Shutting down process %r", process)
+        process.terminate()
+        process.join()
+    socket.close()
+
+<<<<<<< HEAD
+=======
     except:
         print("Unexpected exception")
     finally: # "Nettoyage" si exception leave
@@ -58,4 +92,5 @@ if __name__ == "__main__":
             process.terminate()
             process.join()
         socket.close()
+>>>>>>> e999d4ec16750e70a9741f4af69bdaaa88d2f6f6
     print("END")

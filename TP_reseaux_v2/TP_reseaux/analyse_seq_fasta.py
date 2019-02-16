@@ -321,6 +321,6 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
             con.sendall((" \nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode()))
             reponse=con.recv(1024).decode()
         if reponse=="4":
-            con.sendall("\n---------------\nArret du programme\n---------------\n".encode())
+            con.sendall("\n---------------\nArret du programme\nVous etes deconnecte du serveur\n---------------\n".encode())
             con.shutdown(1)
             con.close()
