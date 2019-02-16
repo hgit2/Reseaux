@@ -1,1 +1,0 @@
-	aa hydrophobes	aa charges (%)	charge net	M	D	C	Q	L	S	I	V	F	G	E	P	N	K	T	W	Y	H	R	A	Falselen(seq)>9

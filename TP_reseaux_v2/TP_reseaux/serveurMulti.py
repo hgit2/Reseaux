@@ -81,16 +81,6 @@ if __name__ == "__main__":
         process.join()
     socket.close()
 
-<<<<<<< HEAD
-=======
-    except:
-        print("Unexpected exception")
-    finally: # "Nettoyage" si exception leave
-        print("Shutting down")
-        for process in multiprocessing.active_children():
-            print("Shutting down process %r", process)
-            process.terminate()
-            process.join()
-        socket.close()
->>>>>>> e999d4ec16750e70a9741f4af69bdaaa88d2f6f6
+
+
     print("END")
