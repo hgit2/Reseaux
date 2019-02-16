@@ -130,8 +130,6 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
 #    if plot_dispo==-1:
 #        plot_dispo=plt_dispo
     print("ecriture fichier")
-    print("des", type(des))
-    con.recv(1024).decode()
     con.sendall(des.encode()) # n'arrive pas a l'envoyer...
     print("des")
 #    nom_fichier="Annalyse_seq_prot"+des
@@ -149,7 +147,7 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
 #    sortie=open(nom_fichier+"(%i).py" % numero_fichier,'a') # Ouverture du fichier resultat.
     nb_aa_hydrophobe,aa_charges,charge=ap.nb_residus_hydrophobes_et_residus_charges_et_chage_net(seq,compo) # Recuperation les resultats de l'etude de la sequence entiere.
     num_fenetre=[]
-#    sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
+    #sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
     resultats="\n sequence entiere\t"+str(nb_aa_hydrophobe)+"\t%.3f" % aa_charges +"\t"+str(charge)
     loop=True # mot clé pour attendre de recevoir l'ensemble des cles cote client
     con.sendall(str(loop).encode())
@@ -157,54 +155,63 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
     for ele in keys:
         #sortie.write("\t"+str(ele))
         con.sendall(str(ele).encode())
-        print(str(ele))
         resultats+="\t"+str(compo[str(ele)])
         con.sendall(str(loop).encode())
     loop=False #  mot clé signifiant que l'ensemble des cles a ete envoye
+    print(loop)
     con.sendall(str(loop).encode())
     resultats=resultats.replace(".",",")
     con.sendall(resultats.encode())
     #sortie.write(resultats)
     if len(seq)>=9: # Dans ce "if" recuperation et traitement des resultats par fenetre glissante de 9 acide amines.
+        con.sendall("len(seq)>9".encode())
         hydrophobicite=ap.hydrophobicite_moyenne(seq,con, 9)
-        print(hydrophobicite)
+        print("hydrophobicite")
         #sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
+        loop=True
+        con.sendall(str(loop).encode())
         for i,ele in enumerate(hydrophobicite):
             num_fenetre.append(i+1)
             resultatsfenetres=str(i+1)+"\t%.3f" % hydrophobicite[i] +"\n"
             resultatsfenetres=resultatsfenetres.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
+            con.sendall(resultatsfenetres.encode())
             #sortie.write(resultatsfenetres)
+            con.sendall(str(loop).encode())
+        print(loop)
+        loop=False
+        con.sendall(str(loop).encode())
        #sortie.close()
-        if plot_dispo: # Seulement si le module matplotlib est installe sur le poste de traville utilise.
-            plt.subplot(212)
-            plt.title("Hydrophobicite moyennes de chaque fenetre glissante de 9 acides amines de la sequence")
-            plt.grid()
-            plt.axhline(0, linestyle=':', color='k')
-            plt.plot(num_fenetre,hydrophobicite)
-            plt.xlabel("Numero des fenetres glissantes")
-            plt.ylabel("hydrophobicite (Echelle de Fauchere et Peliska)")
-            if max(hydrophobicite)>0:
-                plt.annotate("",xy=(0.5,0), xycoords='data',xytext=(0.5,max(hydrophobicite)), textcoords='data',arrowprops=dict(arrowstyle="<->",connectionstyle="arc3",color='r'), )
-                plt.text(-max(num_fenetre)/50,max(hydrophobicite)-0.2, "Partie hydrophobe", fontsize=8,color='r',rotation=85)
-            if min(hydrophobicite)<0:
-                plt.annotate("",xy=(0.5,0), xycoords='data',xytext=(0.5,min(hydrophobicite)), textcoords='data',arrowprops=dict(arrowstyle="<->",connectionstyle="arc3",color='b'), )
-                plt.text(-max(num_fenetre)/50,0, "Partie hydrophile", fontsize=8,color='b',rotation=85)
-            fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
-            numero_fichier=0
-            while fichier_existe: # Tant que le fichier "nom_fichier.png" existe le nom change.
-                try: 
-                    sortie=open(nom_fichier+"(%i).png" % numero_fichier,'r') # Test si le fichier "nom.py" existe.
-                except FileNotFoundError: 
-                    fichier_existe=False
-                else:
-                    sortie.close()
-                    numero_fichier+=1
-                    nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier) # Si le fichier "nom_fichier.png" existe on change de nom pour ne pas l'ecraser.
-            plt.savefig(nom_fichier+"(%i).png" % numero_fichier,format='png')
-            plt.show()
+#        if plot_dispo: # Seulement si le module matplotlib est installe sur le poste de traville utilise.
+#            plt.subplot(212)
+#            plt.title("Hydrophobicite moyennes de chaque fenetre glissante de 9 acides amines de la sequence")
+#            plt.grid()
+#            plt.axhline(0, linestyle=':', color='k')
+#            plt.plot(num_fenetre,hydrophobicite)
+#            plt.xlabel("Numero des fenetres glissantes")
+#            plt.ylabel("hydrophobicite (Echelle de Fauchere et Peliska)")
+#            if max(hydrophobicite)>0:
+#                plt.annotate("",xy=(0.5,0), xycoords='data',xytext=(0.5,max(hydrophobicite)), textcoords='data',arrowprops=dict(arrowstyle="<->",connectionstyle="arc3",color='r'), )
+#                plt.text(-max(num_fenetre)/50,max(hydrophobicite)-0.2, "Partie hydrophobe", fontsize=8,color='r',rotation=85)
+#            if min(hydrophobicite)<0:
+#                plt.annotate("",xy=(0.5,0), xycoords='data',xytext=(0.5,min(hydrophobicite)), textcoords='data',arrowprops=dict(arrowstyle="<->",connectionstyle="arc3",color='b'), )
+#                plt.text(-max(num_fenetre)/50,0, "Partie hydrophile", fontsize=8,color='b',rotation=85)
+#            fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
+#            numero_fichier=0
+#            while fichier_existe: # Tant que le fichier "nom_fichier.png" existe le nom change.
+#                try: 
+#                    sortie=open(nom_fichier+"(%i).png" % numero_fichier,'r') # Test si le fichier "nom.py" existe.
+#                except FileNotFoundError: 
+#                    fichier_existe=False
+#                else:
+#                    sortie.close()
+#                    numero_fichier+=1
+#                    nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier) # Si le fichier "nom_fichier.png" existe on change de nom pour ne pas l'ecraser.
+#            plt.savefig(nom_fichier+"(%i).png" % numero_fichier,format='png')
+#            plt.show()
     else:
+        con.sendall("len(seq)<=9".encode())
         con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'analyse sur la sequence entiere a pu etre effectuee.\nLes annalyses par fenetre requierent une sequence de longueur minimum 9 acides amines.\n---------------\n".encode())
-        sortie.close()
+        #sortie.close()
 
 def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'annalyse d'une sequence ADN ou proteique sous forme de tableaux et de graphiques  
     "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet de realiser une etude de sequence nucleique ou proteique au format fasta, cette etude constiste dans les deux cas en une evalusation de la composition de la sequence puis en une etude plus specifique au type de la sequence (se referer a resultat_prot.__doc__ pour plus de deatils sur l'etude des sequences proteique et a resultat_ADN.__doc__ pour les sequences nucleique). Cette procedure ne prend aucun argument en entree. Elle genere un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle cree si l'utilisateur le souhaite et que le module 'matplotlib' est installe sur le poste de travail." 
@@ -276,7 +283,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         plot_dispo = -1 
                         con.sendall("resultat_prot".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
                         print("mot cle envoye")
-                        resultat_prot(des,sequence,compo,keys,plot_dispo, con)
+                        resultat_prot(des,sequence,compo,keys,con,plot_dispo)
 
                     else :
 #                        if plot_dispo :
