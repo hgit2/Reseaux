@@ -50,26 +50,35 @@ while 1:
                 nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier)
         sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
         sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
-        loop=s.recv(1024).decode()# permet de s'assurer qu'on écrit tous les "ele"
-        print(loop)
+        print('before loop')
+        loop=s.recv(4).decode()# permet de s'assurer qu'on écrit tous les "ele", Size 4 to get only the true
+        print('loop value   :   ', loop )
         while loop == "True":
-            ele = s.recv(1024).decode()
-            #print(ele)
+            ele = s.recv(1).decode()
             sortie.write("\t"+ele)
-            loop=s.recv(1024).decode()
-            print(loop)
-            
-        resultats=s.recv(1024).decode()
+           # print("ele" , ele)
+            loop=s.recv(4).decode()
+           # print(loop)
+           # print('here')
+       
+        len_resultats = s.recv(4).decode()
+        print('LEN RESULTATS',  len_resultats)
+        print('LEN RESULTATS INT',  int(len_resultats))
+        len_resultats = int(len_resultats)
+        resultats=s.recv(len_resultats).decode()
         print("resutat: ", resultats)
+        #pos =  resultats.find("len") 
         sortie.write(resultats)
         print("resultats")
-        instruction=s.recv(1024).decode()
-        print(instruction)
-        if instruction=="len(seq)>9":
+        
+        instruction=s.recv(10).decode()
+        print( 'instruction' ,instruction)
+        if ">" in instruction:
             # analyses par fenetres
             print("fenetres")
             sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
-            loop=s.recv(1024).decode()# permet de s'assurer qu'on ecrit tous les resultatsfenetres
+            loop=s.recv(1024).decode()# permet de s'assurer qu'on ecrit tous les resultats fenetres
+            print('loop before the while', loop)
             while loop=="True":
                 resultatsfenetres=s.recv(1024).decode()
                 sortie.write(resultatsfenetres)
@@ -78,7 +87,7 @@ while 1:
         sortie.close()
         
     else :
-        print(data) # on affiche la reponse
+        print('if not resultats_prot the variable data is  :  ' ,data) # on affiche la reponse
     
     msg = input('>> ')
     

@@ -150,8 +150,10 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
     #sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
     resultats="\n sequence entiere\t"+str(nb_aa_hydrophobe)+"\t%.3f" % aa_charges +"\t"+str(charge)
     loop=True # mot clé pour attendre de recevoir l'ensemble des cles cote client
+
     con.sendall(str(loop).encode())
-    print(str(loop))
+    print('LOOP VALUE AFTER SENDING' , str(loop))
+
     for ele in keys:
         #sortie.write("\t"+str(ele))
         con.sendall(str(ele).encode())
@@ -161,9 +163,16 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
     print(loop)
     con.sendall(str(loop).encode())
     resultats=resultats.replace(".",",")
+    print('len_resultats '  ,len(resultats))
+    con.sendall(str(len(resultats)).encode())
     con.sendall(resultats.encode())
+
+
+
+    
     #sortie.write(resultats)
     if len(seq)>=9: # Dans ce "if" recuperation et traitement des resultats par fenetre glissante de 9 acide amines.
+        print("len de instruction ", len("len(seq)>9"))
         con.sendall("len(seq)>9".encode())
         hydrophobicite=ap.hydrophobicite_moyenne(seq,con, 9)
         print("hydrophobicite")
