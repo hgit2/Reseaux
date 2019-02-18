@@ -7,7 +7,7 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 
-def composition(seq): # Donne la composition de la sequence en nucleotides. (Fonctionne pour les sequence proteique ou nucleotidique)
+def composition(seq, con): # Donne la composition de la sequence en nucleotides. (Fonctionne pour les sequence proteique ou nucleotidique)
     "Cette fonction calcule la composition d'une sequence (argument) sous forme de chaine de caractére."
     seq=seq.strip()
     dico={}
@@ -39,8 +39,8 @@ def contenu_C_et_G(seq, con, taille=-1): # Renvoie le poucentage de C+G contenue
                 contenu.append(0)
         return(contenu)
     else:
-        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\nChangez de sequence ou de taille de fenetre.\n---------------\n".encode())
-        con.shutdown(1)
+        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\n".encode())
+        con.sendall("Changez de sequence ou de taille de fenetre.\n---------------\n".encode())
         return('')
 
 
@@ -63,8 +63,8 @@ def nb_CpG(seq,con, taille=-1): # Renvoie le nombre de couple CG presents dans l
             contenu_CpG.append(CpG)
         return(contenu_CpG)
     else:
-        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\nChangez de sequence ou de taille de fenetre.\n---------------\n".encode())
-        con.shutdown(1)
+        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\n".encode())
+        con.sendall("Changez de sequence ou de taille de fenetre.\n---------------\n".encode())
         return('')
 
 def contenu_C_et_G_et_nb_CpG(seq,con,taille=-1,comp=-1): # Renvoie le poucentage de C+G et le nombre de couple CG contenue dans la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
@@ -101,8 +101,8 @@ def contenu_C_et_G_et_nb_CpG(seq,con,taille=-1,comp=-1): # Renvoie le poucentage
                 contenu.append(0)
         return(contenu,contenu_CpG)
     else:
-        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\nChangez de sequence ou de taille de fenetre.\n---------------\n".encode())
-        con.shutdown(1)
+        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\n".encode())
+        con.sendall("Changez de sequence ou de taille de fenetre.\n---------------\n".encode())
         return('','')
 
 def rapport_CpG(seq,con,taille=-1): # Renvoie le rapport CpG de la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
@@ -124,8 +124,8 @@ def rapport_CpG(seq,con,taille=-1): # Renvoie le rapport CpG de la sequence (par
                 rapports.append("NA")
         return(rapports)
     else:
-        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\nChangez de sequence ou de taille de fenetre.\n---------------\n".encode())
-        con.shutdown(1)
+        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\n".encode())
+        con.sendall("Changez de sequence ou de taille de fenetre.\n---------------\n".encode())
         return('')
 
 def rapport_CpG_nb_CpG_contenu_C_et_G(seq,con, taille=-1,comp=-1): # Renvoie le rapportCpG, le nombre observe CpG et le pourcentage de C+G de de la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
@@ -163,8 +163,8 @@ def rapport_CpG_nb_CpG_contenu_C_et_G(seq,con, taille=-1,comp=-1): # Renvoie le 
                 rapports.append("NA")
         return(rapports,nb_observe,contenu)
     else:
-        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\nChangez de sequence ou de taille de fenetre.\n---------------\n".encode())
-        con.shutdown(1)
+        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+",\n ou de taille de fenetre maximale "+str(longueur)+"\n".encode())
+        con.sendall("Changez de sequence ou de taille de fenetre.\n---------------\n".encode())
         return('','','')
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -182,7 +182,6 @@ def fenetre_seq(seq,taille, con):# Fonction tres generale mais qui est trop gour
             fenetres.append(fenetre)
     else:
         con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+".\n---------------\n".encode())
-        con.shutdown(1)
         fenetres=''
     return(fenetres)
 

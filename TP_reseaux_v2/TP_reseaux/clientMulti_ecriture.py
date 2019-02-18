@@ -53,6 +53,7 @@ while 1:
         print('before loop')
         loop=s.recv(4).decode()# permet de s'assurer qu'on écrit tous les "ele", Size 4 to get only the true
         print('loop value   :   ', loop )
+
         while loop == "True":
             ele = s.recv(1).decode()
             sortie.write("\t"+ele)
@@ -62,7 +63,7 @@ while 1:
            # print('here')
        
         len_resultats = s.recv(4).decode()
-        print('LEN RESULTATS',  len_resultats)
+        #print('LEN RESULTATS',  len_resultats)
         print('LEN RESULTATS INT',  int(len_resultats))
         len_resultats = int(len_resultats)
         resultats=s.recv(len_resultats).decode()
@@ -77,12 +78,17 @@ while 1:
             # analyses par fenetres
             print("fenetres")
             sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
-            loop=s.recv(1024).decode()# permet de s'assurer qu'on ecrit tous les resultats fenetres
-            print('loop before the while', loop)
+            loop=s.recv(4).decode()# permet de s'assurer qu'on ecrit tous les resultats fenetres
+            
             while loop=="True":
-                resultatsfenetres=s.recv(1024).decode()
-                sortie.write(resultatsfenetres)
-                loop=s.recv(1024).decode()
+                resultatsfenetres=s.recv(20).decode()
+       		    #print(resultatsfenetres)
+       		    
+                if "False" not in resultatsfenetres:
+               		sortie.write(resultatsfenetres)
+                msg = "ok"
+                s.sendall(msg.encode())
+                loop=s.recv(4).decode()
         
         sortie.close()
         

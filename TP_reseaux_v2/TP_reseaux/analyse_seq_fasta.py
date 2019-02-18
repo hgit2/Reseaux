@@ -153,7 +153,7 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
 
     con.sendall(str(loop).encode())
     print('LOOP VALUE AFTER SENDING' , str(loop))
-
+  
     for ele in keys:
         #sortie.write("\t"+str(ele))
         con.sendall(str(ele).encode())
@@ -185,6 +185,7 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
             resultatsfenetres=resultatsfenetres.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
             con.sendall(resultatsfenetres.encode())
             #sortie.write(resultatsfenetres)
+            con.recv(2).decode()
             con.sendall(str(loop).encode())
         print(loop)
         loop=False
