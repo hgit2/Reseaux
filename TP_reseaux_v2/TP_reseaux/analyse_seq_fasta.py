@@ -23,94 +23,123 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
     # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'annalyse de la sequence ADN.
     "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet d'effectuer une etude de sequence nucleique. Cette etude consiste en un calcul du pourcentage de C+G et de CpG dans la sequence entiere, et en un calcule du rapport CpG, du pourcentage de C+G, et du nombre de CpG par fenetre glissante de deux cents nucleotides ainsi qu'une conclsion sur la presence ou non d'ilots CpG. La procedure cree un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle engendre sous certaines conditions. Elle prend en arguments une description et la sequence correspondante au minimum. En troisieme argument elle prend la composition de la sequence (compo=) sous forme de dictionnaire, par defaut cette composition est calculee dans la procedure. De meme en quatrieme argument elle prend la liste des caracteres composants la sequence (keys=) (chacun ecrit entre guillemets), par defaut cette liste est calculee par la procedure. En dernier argument elle prend le boleen plot_dispo qui par defaut vaut True si le poste de tavail dispose de l'installation du module 'matplotlib' et False sinon, si l'utilisateur choisit d'entree plot_dispo=True en argument il doit lui meme s'assurere de cette installation au prealable, si au contraire il rentre plot_dispo=False, les graphiques ne seront pas generes."  
     if compo==-1: # Permet une utilisation dans un cas plus general dans lequel l'utilisateur ne disposerait pas de la composition de la sequnece.
-        compo=an.composition(seq,con)
+        compo=an.composition(seq)
 
     if keys==-1: # Permet une utilisation dans un cas plus general dans lequel l'utilisateur ne disposerait pas d'une liste des caractères composants la sequnece.
         keys=[]
         for key in compo.keys():
             keys.append(key)
-    if plot_dispo==-1: # Permet une utilisation plus generale pour laquelle l'utilisateur n'aurait pas a choisir s'il souhaite ou non tracer les graphiques.
-        plot_dispo=plt_dispo
-    nom_fichier="Analyse_seq_nucl"+des           
-    fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
-    numero_fichier=0
-    while fichier_existe: # Tant que le fichier "nom_fichier.py" existe le nom change.
-        try: 
-            sortie=open(nom_fichier+"(%i).py" % numero_fichier,'r') # Test si le fichier "nom.py" existe.
-        except FileNotFoundError: 
-            fichier_existe=False # Le fichier n'existe pas on peut donc le creer sans prendre le risque d'en ecraser un preexistant.
-        else:
-            sortie.close()
-            numero_fichier+=1
-            nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier) # Si le fichier "nom_fichier.py" existe on change de nom pour ne pas l'ecraser.
-    sortie=open(nom_fichier+"(%i).py" % numero_fichier,'a')
-    CG,pourcentCpG=an.contenu_C_et_G_et_nb_CpG(seq,con, comp=compo) # Recuperation du pourcentage de C+G dans la sequence.
+    #if plot_dispo==-1: # Permet une utilisation plus generale pour laquelle l'utilisateur n'aurait pas a choisir s'il souhaite ou non tracer les graphiques.
+    #    plot_dispo=plt_dispo
+
+    print("ecriture fichier")
+    con.sendall(des.encode()) # n'arrive pas a l'envoyer...
+    print("des")
+    # nom_fichier="Analyse_seq_nucl"+des           
+    # fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
+    # numero_fichier=0
+    # while fichier_existe: # Tant que le fichier "nom_fichier.py" existe le nom change.
+    #     try: 
+    #         sortie=open(nom_fichier+"(%i).py" % numero_fichier,'r') # Test si le fichier "nom.py" existe.
+    #     except FileNotFoundError: 
+    #         fichier_existe=False # Le fichier n'existe pas on peut donc le creer sans prendre le risque d'en ecraser un preexistant.
+    #     else:
+    #         sortie.close()
+    #         numero_fichier+=1
+    #         nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier) # Si le fichier "nom_fichier.py" existe on change de nom pour ne pas l'ecraser.
+    # sortie=open(nom_fichier+"(%i).py" % numero_fichier,'a')
+    
+    CG,pourcentCpG=an.contenu_C_et_G_et_nb_CpG(seq, con, comp=compo) # Recuperation du pourcentage de C+G dans la sequence.
+    print("CG,pourcentCpG", pourcentCpG)
     pourcentCpG=pourcentCpG[0]/len(seq)*100 # Recuperation  de nombre de "CG" dans la sequence.
+    print('caculs finis')
+    resultats="\n sequence entiere\t%.3f" % CG[0] + "\t%.3f" % pourcentCpG 
     num_fenetre=[]
-    sortie.write("\tC+G(%)\tCpG(%)") # Redaction des entetes du tableau resultat consernant l'etude de la sequence entiere.
-    resultats="\n sequence entiere\t%.3f" % CG[0] + "\t%.3f" % pourcentCpG # Puis des resultats correspondants.
+    loop=True # mot clé pour attendre de recevoir l'ensemble des cles cote client
+    con.sendall(str(loop).encode())
+    
     for ele in keys:
-        sortie.write("\t"+str(ele))
+        #sortie.write("\t"+str(ele))
+        print("ele",ele)
+        con.sendall(str(ele).encode())
         resultats+="\t"+str(compo[str(ele)])
+        con.sendall(str(loop).encode())
+    loop=False #  mot clé signifiant que l'ensemble des cles a ete envoye
+    #print(loop)
+    con.sendall(str(loop).encode())
     resultats=resultats.replace(".",",")
-    sortie.write(resultats)
+ 
+    con.sendall(resultats.encode())
+    W = con.recv(2).decode()
+    print('wait' ,W)
     if len(seq)>=200: # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'annalyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
-        sortie.write("\n \n \nFenetres\tC+G(%)\tCpG\tRapport CpG\tIlot CpG\n") # Redaction des entetes du tableau resultat consernant l'etude de la sequence par fenetres glissantes. 
-        rapportCpG,CpGfenetre,CGfenetre=an.rapport_CpG_nb_CpG_contenu_C_et_G(seq,200,con)# Recuperation du porcentage de C+G dans chaque fenetre, du nombre de "CG" et du rapport CpG.
+        print("len de instruction ", len("len(seq)>=200"))
+        con.sendall("len(seq)>=200".encode())
+        rapportCpG,CpGfenetre,CGfenetre=an.rapport_CpG_nb_CpG_contenu_C_et_G(seq, con, 200)# Recuperation du porcentage de C+G dans chaque fenetre, du nombre de "CG" et du rapport CpG.
         ilot_CpG=False
         plt_rapportCpG=True
+        print("bf loop")
+        loop=True
+        con.sendall(str(loop).encode())
         for i,ele in enumerate(CGfenetre): # On parcours l'une des liste de resultat de l'annalyse par fenetre, elles ont toutes la meme taille.
             num_fenetre.append(i+1)
             if rapportCpG[i]!="NA":
                 if rapportCpG[i]>=0.6 and CGfenetre[i]>=50: # Permet de verifier la presence d'ilot CpG.
                     ilot_CpG=True
                     resultatsfenetres=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%.3f" % rapportCpG[i] +"\tOui\n" # Redaction des resultats obtenus pour la fenetre i (si presence d'un ilot CpG,cf "else" sinon)
-                    if plot_dispo:
-                        plt.subplot(222) # Ensemble de commande permettant de faire apparaitre les ilots CpG en rouge sur les graphiques.
-                        plt.plot([i+1],[rapportCpG[i]],'.r')
-                        plt.subplot(224)
-                        plt.plot([i+1],[CGfenetre[i]],'.r')
+                    # if plot_dispo:
+                    #     plt.subplot(222) # Ensemble de commande permettant de faire apparaitre les ilots CpG en rouge sur les graphiques.
+                    #     plt.plot([i+1],[rapportCpG[i]],'.r')
+                    #     plt.subplot(224)
+                    #     plt.plot([i+1],[CGfenetre[i]],'.r')
                 else:
                     resultatsfenetres=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%.3f" % rapportCpG[i] +"\tNon\n"
             else:
                 resultatsfenetres=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%s" % rapportCpG[i] +"\tNon\n"
                 plt_rapportCpG=False
             resultatsfenetres=resultatsfenetres.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
-            sortie.write(resultatsfenetres)
-        sortie.close()
-        if plot_dispo :
-            if plt_rapportCpG: # Pour ne pas afficher le graph CpG si certaine valeur de rapportCpG valent "NA".
-                plt.subplot(222) # Ensemble de commandes permettants de tracer les graphiques resultats. Ici pour determiner la place du graphique dasn la fenetre surgissante.
-                plt.title("Analyse de la presence d'ilots CpG\npour chaque fenetres glissantes de 200 nucleotides\nde la sequence") # Pour ajouter un titre.
-                plt.grid() # Pour que la grille soit apparente.
-                plt.plot(num_fenetre,rapportCpG,color='b')
-                plt.axhline(0.6, linestyle=':', color='r')
-                plt.ylabel("Rapports CpG") # Pour choisir le titre de l'axe des ordonnees.
-                if ilot_CpG:
-                    plt.text(0,max(rapportCpG)-0.1, "Ilot CpG", fontsize=10,color='b',bbox=dict(boxstyle="square,pad=0.3",fc="r",ec="w", lw=2)) # Pour faire apparaitre du texte en bleu dans un cadre blanc sur fond rouge.
-                plt.subplot(224)
-            else:
-                plt.subplot(222)
-            plt.grid()
-            plt.plot(num_fenetre,CGfenetre,color='b')
-            plt.axhline(50, linestyle=':', color='r')
-            plt.xlabel("Numero des fenetres glissantes") # Permet de choisir le titre de l'axe des abcisses.
-            plt.ylabel("Pourcentages de C+G")
-            if ilot_CpG:
-                plt.text(0,max(CGfenetre)-5, "Ilot CpG", fontsize=10,color='b',bbox=dict(boxstyle="square,pad=0.3",fc="r",ec="w", lw=2))
-            fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
-            numero_fichier=0
-            while fichier_existe: # Tant que le fichier "nom_fichier.png" existe le nom change.
-                try: 
-                    sortie=open(nom_fichier+"(%i).png" % numero_fichier,'r') # Test si le fichier "nom_fichier.py" existe.
-                except FileNotFoundError: 
-                    fichier_existe=False
-                else:
-                    sortie.close()
-                    numero_fichier+=1
-                    nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier) # Si le fichier "nom_fichier.png" existe on change de nom pour ne pas l'ecraser.
-            plt.savefig(nom_fichier+"(%i).png" % numero_fichier,format='png')
-            plt.show()
+            #########@
+            con.sendall(resultatsfenetres.encode())
+            #sortie.write(resultatsfenetres)
+            con.recv(2).decode()
+            con.sendall(str(loop).encode())
+  
+        loop=False
+        con.sendall(str(loop).encode())
+
+        # if plot_dispo :
+        #     if plt_rapportCpG: # Pour ne pas afficher le graph CpG si certaine valeur de rapportCpG valent "NA".
+        #         plt.subplot(222) # Ensemble de commandes permettants de tracer les graphiques resultats. Ici pour determiner la place du graphique dasn la fenetre surgissante.
+        #         plt.title("Analyse de la presence d'ilots CpG\npour chaque fenetres glissantes de 200 nucleotides\nde la sequence") # Pour ajouter un titre.
+        #         plt.grid() # Pour que la grille soit apparente.
+        #         plt.plot(num_fenetre,rapportCpG,color='b')
+        #         plt.axhline(0.6, linestyle=':', color='r')
+        #         plt.ylabel("Rapports CpG") # Pour choisir le titre de l'axe des ordonnees.
+        #         if ilot_CpG:
+        #             plt.text(0,max(rapportCpG)-0.1, "Ilot CpG", fontsize=10,color='b',bbox=dict(boxstyle="square,pad=0.3",fc="r",ec="w", lw=2)) # Pour faire apparaitre du texte en bleu dans un cadre blanc sur fond rouge.
+        #         plt.subplot(224)
+        #     else:
+        #         plt.subplot(222)
+        #     plt.grid()
+        #     plt.plot(num_fenetre,CGfenetre,color='b')
+        #     plt.axhline(50, linestyle=':', color='r')
+        #     plt.xlabel("Numero des fenetres glissantes") # Permet de choisir le titre de l'axe des abcisses.
+        #     plt.ylabel("Pourcentages de C+G")
+        #     if ilot_CpG:
+        #         plt.text(0,max(CGfenetre)-5, "Ilot CpG", fontsize=10,color='b',bbox=dict(boxstyle="square,pad=0.3",fc="r",ec="w", lw=2))
+        #     fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
+        #     numero_fichier=0
+        #     while fichier_existe: # Tant que le fichier "nom_fichier.png" existe le nom change.
+        #         try: 
+        #             sortie=open(nom_fichier+"(%i).png" % numero_fichier,'r') # Test si le fichier "nom_fichier.py" existe.
+        #         except FileNotFoundError: 
+        #             fichier_existe=False
+        #         else:
+        #             sortie.close()
+        #             numero_fichier+=1
+        #             nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier) # Si le fichier "nom_fichier.png" existe on change de nom pour ne pas l'ecraser.
+        #     plt.savefig(nom_fichier+"(%i).png" % numero_fichier,format='png')
+        #     plt.show()
     else:
         con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'annalyse sur la sequence entiere a pu etre effectuee.\nLes analyses par fenetre requierent une sequence de longueur minimum 200 nucleotides.\n---------------\n".encode())
         sortie.close()
@@ -258,7 +287,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
             description=""
         elif type_seq!="":
             if reponse=="Initialisation":
-                print("yes")
+                
                 if premiere_analyse: # Si une analyse identique a deja ete effectuee on ne la refait pas.
 #                    if plt_dispo: # Pour permettre a l'utilisateur de choisir s'il veut creer des graphiques ou non seulement dans le cas ou le module matplotlib est disponible et donc la creation de graphiques possible.
 #                        plot_dispo=input(" \nSi vous souhaitez que le programme trace des graphiques en se basant \nsur l'analyse par fenetre (l'analyse sera plus longue), tapez 1 \nsinon, tapez 2 : ")
@@ -301,8 +330,12 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 #                                plt.text(-1,-len(seq)/5, "Attention il y a "+str(compo["N"])+" 'N' dans la sequence etudiee\n de longueur : "+str(len(seq))+" nucleotides." , fontsize=10,color='r' , bbox=dict(boxstyle="square,pad=0.3",fc="w",ec="r", lw=1))
 #                            else:
 #                                plt.text(-1,-len(seq)/5, "La sequence etudiee est composee de "+str(len(seq))+"\nnucleotides." , fontsize=10,color='b', bbox=dict(boxstyle="square,pad=0.3",fc="w",ec="b", lw=1))
-                        print("resultat adn")
-                        #resultat_ADN(description,sequence,compo,keys,plot_dispo)
+                        #print("resultat adn")
+
+                        plot_dispo = -1 
+                        con.sendall("resultat_adn".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
+                        print("mot cle envoye")
+                        resultat_ADN(des,sequence, con ,compo,keys,plot_dispo)
                     reponse=="Termine"
             elif reponse=="1":
                 reponse="Initialisation" # Permet de repartir dans la condition menant a l'analyse de la sequence.
