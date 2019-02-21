@@ -60,7 +60,7 @@ while 1:
             print(loop)
             
         resultats=s.recv(1024).decode()
-        print("resutat: ", resultats)
+        #print("resutat: ", resultats)
         sortie.write(resultats)
         print("resultats")
         instruction=s.recv(1024).decode()
