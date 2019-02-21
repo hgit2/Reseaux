@@ -50,35 +50,125 @@ while 1:
                 nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier)
         sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
         sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
-        loop=s.recv(1024).decode()# permet de s'assurer qu'on écrit tous les "ele"
-        print(loop)
+        print('before loop')
+        loop=s.recv(4).decode()# permet de s'assurer qu'on écrit tous les "ele", Size 4 to get only the true
+        print('loop value   :   ', loop )
+
         while loop == "True":
-            ele = s.recv(1024).decode()
-            #print(ele)
+            ele = s.recv(1).decode()
             sortie.write("\t"+ele)
-            loop=s.recv(1024).decode()
-            print(loop)
-            
-        resultats=s.recv(1024).decode()
-        #print("resutat: ", resultats)
+            loop=s.recv(4).decode()
+
+       
+        len_resultats = s.recv(4).decode()
+        #print('LEN RESULTATS',  len_resultats)
+        print('LEN RESULTATS INT',  int(len_resultats))
+        len_resultats = int(len_resultats)
+        resultats=s.recv(len_resultats).decode()
+        print("resutat: ", resultats)
+        #pos =  resultats.find("len") 
         sortie.write(resultats)
         print("resultats")
-        instruction=s.recv(1024).decode()
-        print(instruction)
-        if instruction=="len(seq)>9":
+        
+        instruction=s.recv(10).decode()
+        print( 'instruction' ,instruction)
+        if ">" in instruction:
             # analyses par fenetres
             print("fenetres")
             sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
-            loop=s.recv(1024).decode()# permet de s'assurer qu'on ecrit tous les resultatsfenetres
+            loop=s.recv(4).decode()# permet de s'assurer qu'on ecrit tous les resultats fenetres
+            
             while loop=="True":
-                resultatsfenetres=s.recv(1024).decode()
-                sortie.write(resultatsfenetres)
-                loop=s.recv(1024).decode()
+                resultatsfenetres=s.recv(20).decode()
+       		    #print(resultatsfenetres)
+       		    
+                if "False" not in resultatsfenetres:
+               		sortie.write(resultatsfenetres)
+                msg = "ok"
+                s.sendall(msg.encode())
+                loop=s.recv(4).decode()
+        
+        sortie.close()
+    
+
+    elif data=="resultat_adn":
+        print("ecriture!")
+#        s.sendall("Demarrage de l'ecriture du fichier".encode())
+        des=s.recv(1024).decode()
+        print(des)
+        nom_fichier="Analyse_seq_adn"+des
+        fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
+        numero_fichier=0
+        while fichier_existe: # Tant que le fichier "nom_fichier.png" existe le nom change.
+            try: 
+                sortie=open(nom_fichier+"(%i).py" % numero_fichier,'r') # Test si le fichier "nom_fichier.py" existe.
+            except FileNotFoundError:
+                fichier_existe=False
+            else:
+                sortie.close()
+                numero_fichier+=1
+                nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier)
+        sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
+        sortie.write("\tC+G(%)\tCpG(%)")
+        print('before loop')
+
+        loop=s.recv(4).decode()# permet de s'assurer qu'on écrit tous les "ele", Size 4 to get only the true
+        print('loop value   :   ', loop )
+        while loop == "True":
+            ele = s.recv(1).decode()
+            sortie.write("\t"+ele)
+            
+            loop=s.recv(4).decode()
+    
+        resultats=s.recv(2500).decode()
+        print("resutat: ", resultats)
+        # #pos =  resultats.find("len") 
+        sortie.write(resultats)
+        s.sendall("ok".encode())
+        # print("resultats")
+        instruction=s.recv(13).decode()
+        print("INSTRUCTION " , instruction)
+        if ">" in instruction:
+            # analyses par fenetres
+            print("fenetres")
+            sortie.write("\n \n \nFenetres\tC+G(%)\tCpG\tRapport CpG\tIlot CpG\n") 
+            loop=s.recv(4).decode()# permet de s'assurer qu'on ecrit tous les resultats fenetres
+            print('loop', loop)
+            while loop=="True":
+                resultatsfenetres=s.recv(50).decode()
+                #print(resultatsfenetres)
+                
+                if "False" not in resultatsfenetres:
+                    sortie.write(resultatsfenetres)
+                msg = "ok"
+                s.sendall(msg.encode())
+                loop=s.recv(4).decode()
+        
+        sortie.close()
+    
+        # instruction=s.recv(10).decode()
+        # print( 'instruction' ,instruction)
+        # if ">" in instruction:
+        #     # analyses par fenetres
+        #     print("fenetres")
+        #     sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
+        #     loop=s.recv(4).decode()# permet de s'assurer qu'on ecrit tous les resultats fenetres
+            
+        #     while loop=="True":
+        #         resultatsfenetres=s.recv(20).decode()
+        #         #print(resultatsfenetres)
+                
+        #         if "False" not in resultatsfenetres:
+        #             sortie.write(resultatsfenetres)
+        #         msg = "ok"
+        #         s.sendall(msg.encode())
+        #         loop=s.recv(4).decode()
         
         sortie.close()
         
+
     else :
-        print(data) # on affiche la reponse
+        print('if not resultats_prot the variable data is  :  ' ,data) # on affiche la reponse
     
     msg = input('>> ')
     

@@ -37,8 +37,8 @@ def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1): # Permet d'obtenir les
         keys=[]
         for key in compo.keys():
             keys.append(key)
-    if plt_dispo==-1: # Permet une utilisation plus generale pour laquelle l'utilisateur n'aurait pas a choisir s'il souhaite ou non tracer les graphiques.
-        plt_dispo=plot_dispo
+    if plot_dispo==-1: # Permet une utilisation plus generale pour laquelle l'utilisateur n'aurait pas a choisir s'il souhaite ou non tracer les graphiques.
+        plot_dispo=plot_dispo
     nom_fichier="Analyse_seq_nucl"+des           
     fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
     numero_fichier=0
@@ -73,7 +73,7 @@ def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1): # Permet d'obtenir les
                 if rapportCpG[i]>=0.6 and CGfenetre[i]>=50: # Permet de verifier la presence d'ilot CpG.
                     ilot_CpG=True
                     resultatsfenetres=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%.3f" % rapportCpG[i] +"\tOui\n" # Redaction des resultats obtenus pour la fenetre i (si presence d'un ilot CpG,cf "else" sinon)
-                    if plot_dispo:
+                    if plot_dispo != -1:
                         plt.subplot(222) # Ensemble de commande permettant de faire apparaitre les ilots CpG en rouge sur les graphiques.
                         plt.plot([i+1],[rapportCpG[i]],'.r')
                         plt.subplot(224)
@@ -263,7 +263,8 @@ def resultats_analyse_seq(): # Permet d'optenir les resultats de l'annalyse d'un
                     if type_seq=="prot":
                         resultat_prot(description,sequence,compo,keys,plot_dispo)
                     else :
-                        if plot_dispo :
+                        plot_dispo = -1
+                        if plot_dispo != -1 :
                             if "N" in compo:
                                 plt.text(-1,-len(seq)/5, "Attention il y a "+str(compo["N"])+" 'N' dans la sequence etudiee\n de longueur : "+str(len(seq))+" nucleotides." , fontsize=10,color='r' , bbox=dict(boxstyle="square,pad=0.3",fc="w",ec="r", lw=1))
                             else:
