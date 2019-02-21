@@ -195,17 +195,14 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
     print(loop)
     con.sendall(str(loop).encode())
     resultats=resultats.replace(".",",")
-    print('len_resultats '  ,len(resultats))
-    con.sendall(str(len(resultats)).encode())
+    #print('len_resultats '  ,len(resultats))
+    #con.sendall(str(len(resultats)).encode())
     con.sendall(resultats.encode())
-
-
-
-    
-    #sortie.write(resultats)
+#    W = con.recv(2).decode() # Attendre la fin de l'écriture
+#    print('wait' ,W) # 
 
     if len(seq)>=9: # Dans ce "if" recuperation et traitement des resultats par fenetre glissante de 9 acide amines.
-        print("len de instruction ", len("len(seq)>9"))
+        #print("len de instruction ", len("len(seq)>9"))
         con.sendall("len(seq)>9".encode())
         hydrophobicite=ap.hydrophobicite_moyenne(seq,con, 9)
         print("hydrophobicite")
@@ -221,8 +218,6 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
         print("resultat sent")
     
     
-    
-#       #sortie.close()
 #        if plot_dispo: # Seulement si le module matplotlib est installe sur le poste de traville utilise.
 #            plt.subplot(212)
 #            plt.title("Hydrophobicite moyennes de chaque fenetre glissante de 9 acides amines de la sequence")
