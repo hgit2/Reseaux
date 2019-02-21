@@ -134,7 +134,7 @@ def rapport_CpG(seq,con,taille=-1): # Renvoie le rapport CpG de la sequence (par
 
 def rapport_CpG_nb_CpG_contenu_C_et_G(seq, con, taille=-1,comp=-1 ): # Renvoie le rapportCpG, le nombre observe CpG et le pourcentage de C+G de de la sequence (par defaut) ou dans toutes les fenetres glissante de longueurs donnees.
     "Cette fonction calcule le rapport CpG (premiere liste retournee) le nombre de couple CG (deuxieme liste retournee) le pourcentage de C+G (troisieme liste retournee) presents dans une sequence donnee en premier argument (par defaut) ou dans toutes les fenetres glissante de longueurs donnees en deuxieme argument."
-    print('IN FUNCTION')
+    
     if taille==-1:
         taille=len(seq)
     seq=seq.upper()

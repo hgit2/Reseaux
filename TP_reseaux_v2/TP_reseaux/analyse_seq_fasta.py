@@ -192,16 +192,14 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
     print(loop)
     con.sendall(str(loop).encode())
     resultats=resultats.replace(".",",")
-    print('len_resultats '  ,len(resultats))
-    con.sendall(str(len(resultats)).encode())
+    #print('len_resultats '  ,len(resultats))
+    #con.sendall(str(len(resultats)).encode())
     con.sendall(resultats.encode())
+    W = con.recv(2).decode() # Attendre la fin de l'écriture
+    print('wait' ,W) # 
 
-
-
-    
-    #sortie.write(resultats)
     if len(seq)>=9: # Dans ce "if" recuperation et traitement des resultats par fenetre glissante de 9 acide amines.
-        print("len de instruction ", len("len(seq)>9"))
+        #print("len de instruction ", len("len(seq)>9"))
         con.sendall("len(seq)>9".encode())
         hydrophobicite=ap.hydrophobicite_moyenne(seq,con, 9)
         print("hydrophobicite")
@@ -214,7 +212,7 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
             resultatsfenetres=resultatsfenetres.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
             con.sendall(resultatsfenetres.encode())
             #sortie.write(resultatsfenetres)
-            con.recv(2).decode()
+            con.recv(2).decode() # Attendre la fin de l'écriture
             con.sendall(str(loop).encode())
         print(loop)
         loop=False
