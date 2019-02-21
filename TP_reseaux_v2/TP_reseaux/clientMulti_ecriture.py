@@ -3,7 +3,7 @@
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 #                                                                Projet Réseaux 4BIM
-#                                                             Récupération de sequences fasta
+#                                                                    Code client
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 
@@ -23,6 +23,7 @@ plot_dispo=False # à gérer PLUS TARD
 #creation de la socket puis connexion
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("127.0.0.1",int(sys.argv[1])))
+print("\nSi vous souhaitez fermer ce programme, tapez exit()\n")
 
 
 while 1:
@@ -32,6 +33,7 @@ while 1:
     
     
     if data=="resultat_prot":
+        print("Analyse en cours...\n")
         print("ecriture!")
 #        s.sendall("Demarrage de l'ecriture du fichier".encode())
         des=s.recv(1024).decode()
@@ -76,20 +78,14 @@ while 1:
             # analyses par fenetres
             print("fenetres")
             sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
-            loop=s.recv(4).decode()# permet de s'assurer qu'on ecrit tous les resultats fenetres
-            
-            while loop=="True":
-                resultatsfenetres=s.recv(20).decode()
-       		    #print(resultatsfenetres)
-       		    
-                if "False" not in resultatsfenetres:
-               		sortie.write(resultatsfenetres)
-                msg = "ok"
-                s.sendall(msg.encode())
-                loop=s.recv(4).decode()
+
+            resultatsfenetres=s.recv(10000).decode()
+            print("resultat received")
+            sortie.write(resultatsfenetres)
+            print("resultat written")
         
         sortie.close()
-    
+        print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
 
     elif data=="resultat_adn":
         print("ecriture!")
@@ -119,12 +115,13 @@ while 1:
             sortie.write("\t"+ele)
             
             loop=s.recv(4).decode()
+        
     
         resultats=s.recv(2500).decode()
         print("resutat: ", resultats)
         # #pos =  resultats.find("len") 
         sortie.write(resultats)
-        s.sendall("ok".encode())
+        #s.sendall("ok".encode())
         # print("resultats")
         instruction=s.recv(13).decode()
         print("INSTRUCTION " , instruction)
@@ -132,20 +129,28 @@ while 1:
             # analyses par fenetres
             print("fenetres")
             sortie.write("\n \n \nFenetres\tC+G(%)\tCpG\tRapport CpG\tIlot CpG\n") 
-            loop=s.recv(4).decode()# permet de s'assurer qu'on ecrit tous les resultats fenetres
-            print('loop', loop)
-            while loop=="True":
-                resultatsfenetres=s.recv(50).decode()
-                #print(resultatsfenetres)
-                
-                if "False" not in resultatsfenetres:
-                    sortie.write(resultatsfenetres)
-                msg = "ok"
-                s.sendall(msg.encode())
-                loop=s.recv(4).decode()
+#            loop=s.recv(4).decode()# permet de s'assurer qu'on ecrit tous les resultats fenetres
+#            print('loop', loop)
+#            while loop=="True":
+#                resultatsfenetres=s.recv(50).decode()
+#                #print(resultatsfenetres)
+#                
+#                if "False" not in resultatsfenetres:
+#                    sortie.write(resultatsfenetres)
+#                msg = "ok"
+#                s.sendall(msg.encode())
+#                loop=s.recv(4).decode()
+#        
+#        sortie.close()
+            resultatsfenetres=s.recv(300000).decode()
+            print("resultat received")
+            sortie.write(resultatsfenetres)
+            print("resultat written")
         
         sortie.close()
-    
+        print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
+
+
         # instruction=s.recv(10).decode()
         # print( 'instruction' ,instruction)
         # if ">" in instruction:
@@ -164,12 +169,12 @@ while 1:
         #         s.sendall(msg.encode())
         #         loop=s.recv(4).decode()
         
-        sortie.close()
+        #sortie.close()
         
 
     else :
         print('if not resultats_prot the variable data is  :  ' ,data) # on affiche la reponse
-    
+        
     msg = input('>> ')
     
     # test pour arreter le client python proprement
@@ -177,10 +182,11 @@ while 1:
         # mais la comme on initialise raw_input c'est bon puisque raw_input renvoi une chaine vide quand on tape entree
         break
     elif msg=="":
-        s.send("WARNING : empty message".encode())    
+        s.sendall("WARNING : empty message".encode())    
         
+    else:        
     # envoi puis reception de la reponse
-    s.sendall(msg.encode())
+        s.sendall(msg.encode())
     print("after sendall")
 
 # fermeture de la connexion

@@ -12,6 +12,7 @@ import urllib.request
 
 def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucleique au format fasta dans un fichier situe dans le meme dossier que ce module ou sur internet. 
     "Cette fonction fait appel au module lire_fasta qui doit etre place dans le meme repertoire courant que ce module (recuperation_sequence_fasta), elle permet une interaction avec l'utilisateur qui peut choisir quel type de sequence il souhaite recupere. Finalement cette fonction permet de recuperer une sequence au format fasta et sa description."
+    print("dans entree")
     con.sendall(" \nSi vous souhaitez etudier une sequence proteique tapez 1.\nSi vous souhaitez etudier une sequence nucleique tapez 2.\nPour arreter le programme tapez 4.\nTapez ici votre choix puis appuyez sur 'entree' :".encode())
     type_seq=con.recv(1024).decode()
     while type_seq!="1" and type_seq!="2" and type_seq!="4":
@@ -62,5 +63,6 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
 
     con.sendall("\n---------------\nArret du programme\nVous etes deconnecte du serveur\n---------------\n".encode())
     con.shutdown(1)
+    con.close()
     return("","","") # Evite la remontee d'une erreur pour non attribution de variable.
 

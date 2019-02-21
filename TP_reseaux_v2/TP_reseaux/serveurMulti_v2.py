@@ -22,8 +22,8 @@ stopBoolServ = True
 
 
 def signal_handler(signal, frame):
-    "Function qui permet de traiter les arrets par ctrl+C"
-    print('\n\nYou pressed Ctrl+C\nSERVEUR CLOSED\n')
+    "Fonction qui permet de traiter les arrets par ctrl+C"
+    print('\n\nYou pressed Ctrl+C\nSERVER CLOSED\n')
     global stopBoolServ
     stopBoolServ = False
     sys.exit(0)
@@ -56,7 +56,7 @@ class Serveur:
         # creation de la connection pour le serveur, protocol TCP, domaine internet
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
         # recuperation du numero de port via la ligne de commande
-        sock.bind(("0.0.0.0",int(sys.argv[1])))
+        sock.bind(("127.0.0.1",int(sys.argv[1])))
         sock.listen(1)
         print("\nListening\n")
         while stopBoolServ:
