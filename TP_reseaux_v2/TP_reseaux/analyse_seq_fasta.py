@@ -70,42 +70,45 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
     resultats=resultats.replace(".",",")
  
     con.sendall(resultats.encode())
-    W = con.recv(2).decode()
-    print('wait' ,W)
+#    W = con.recv(2).decode()
+#    print('wait' ,W)
     if len(seq)>=200: # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'annalyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
         print("len de instruction ", len("len(seq)>=200"))
         con.sendall("len(seq)>=200".encode())
         rapportCpG,CpGfenetre,CGfenetre=an.rapport_CpG_nb_CpG_contenu_C_et_G(seq, con, 30)# Recuperation du porcentage de C+G dans chaque fenetre, du nombre de "CG" et du rapport CpG.
         ilot_CpG=False
         plt_rapportCpG=True
-        print("bf loop")
-        loop=True
-        con.sendall(str(loop).encode())
+       # print("bf loop")
+        #loop=True
+        #con.sendall(str(loop).encode())
+        resultatsfenetres=""
         for i,ele in enumerate(CGfenetre): # On parcours l'une des liste de resultat de l'annalyse par fenetre, elles ont toutes la meme taille.
+            print(i)
             num_fenetre.append(i+1)
             if rapportCpG[i]!="NA":
                 if rapportCpG[i]>=0.6 and CGfenetre[i]>=50: # Permet de verifier la presence d'ilot CpG.
                     ilot_CpG=True
-                    resultatsfenetres=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%.3f" % rapportCpG[i] +"\tOui\n" # Redaction des resultats obtenus pour la fenetre i (si presence d'un ilot CpG,cf "else" sinon)
+                    resultatsfenetres_suite=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%.3f" % rapportCpG[i] +"\tOui\n" # Redaction des resultats obtenus pour la fenetre i (si presence d'un ilot CpG,cf "else" sinon)
                     # if plot_dispo:
                     #     plt.subplot(222) # Ensemble de commande permettant de faire apparaitre les ilots CpG en rouge sur les graphiques.
                     #     plt.plot([i+1],[rapportCpG[i]],'.r')
                     #     plt.subplot(224)
                     #     plt.plot([i+1],[CGfenetre[i]],'.r')
                 else:
-                    resultatsfenetres=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%.3f" % rapportCpG[i] +"\tNon\n"
+                    resultatsfenetres_suite=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%.3f" % rapportCpG[i] +"\tNon\n"
             else:
-                resultatsfenetres=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%s" % rapportCpG[i] +"\tNon\n"
+                resultatsfenetres_suite=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%s" % rapportCpG[i] +"\tNon\n"
                 plt_rapportCpG=False
-            resultatsfenetres=resultatsfenetres.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
+            resultatsfenetres_suite=resultatsfenetres_suite.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
+            resultatsfenetres = resultatsfenetres + resultatsfenetres_suite
             #########@
-            con.sendall(resultatsfenetres.encode())
-            #sortie.write(resultatsfenetres)
-            con.recv(2).decode()
-            con.sendall(str(loop).encode())
-  
-        loop=False
-        con.sendall(str(loop).encode())
+#            con.sendall(resultatsfenetres.encode())
+#            #sortie.write(resultatsfenetres)
+#            con.recv(2).decode()
+#            con.sendall(str(loop).encode())
+        con.sendall(resultatsfenetres.encode())
+#        loop=False
+#        con.sendall(str(loop).encode())
 
         # if plot_dispo :
         #     if plt_rapportCpG: # Pour ne pas afficher le graph CpG si certaine valeur de rapportCpG valent "NA".
@@ -195,8 +198,8 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
     #print('len_resultats '  ,len(resultats))
     #con.sendall(str(len(resultats)).encode())
     con.sendall(resultats.encode())
-    W = con.recv(2).decode() # Attendre la fin de l'écriture
-    print('wait' ,W) # 
+#    W = con.recv(2).decode() # Attendre la fin de l'écriture
+#    print('wait' ,W) # 
 
     if len(seq)>=9: # Dans ce "if" recuperation et traitement des resultats par fenetre glissante de 9 acide amines.
         #print("len de instruction ", len("len(seq)>9"))
@@ -204,22 +207,18 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
         hydrophobicite=ap.hydrophobicite_moyenne(seq,con, 9)
         print("hydrophobicite")
         #sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
-        loop=True
-        con.sendall(str(loop).encode())
+        resultatsfenetres=""
         for i,ele in enumerate(hydrophobicite):
             num_fenetre.append(i+1)
-            resultatsfenetres=str(i+1)+"\t%.3f" % hydrophobicite[i] +"\n"
-            resultatsfenetres=resultatsfenetres.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
-            con.sendall(resultatsfenetres.encode())
+            resultatsfenetres_suite= str(i+1)+"\t%.3f" % hydrophobicite[i] +"\n"
+            resultatsfenetres_suite=resultatsfenetres_suite.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
+            resultatsfenetres = resultatsfenetres + resultatsfenetres_suite
             #sortie.write(resultatsfenetres)
-            con.recv(2).decode() # Attendre la fin de l'écriture
-            con.sendall(str(loop).encode())
-        print(loop)
-        loop=False
-        con.sendall(str(loop).encode())
 
+        con.sendall(resultatsfenetres.encode())
+        print("resultat sent")
+    
 
-       #sortie.close()
 #        if plot_dispo: # Seulement si le module matplotlib est installe sur le poste de traville utilise.
 #            plt.subplot(212)
 #            plt.title("Hydrophobicite moyennes de chaque fenetre glissante de 9 acides amines de la sequence")
@@ -254,10 +253,12 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
 
 def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'annalyse d'une sequence ADN ou proteique sous forme de tableaux et de graphiques  
     "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet de realiser une etude de sequence nucleique ou proteique au format fasta, cette etude constiste dans les deux cas en une evalusation de la composition de la sequence puis en une etude plus specifique au type de la sequence (se referer a resultat_prot.__doc__ pour plus de deatils sur l'etude des sequences proteique et a resultat_ADN.__doc__ pour les sequences nucleique). Cette procedure ne prend aucun argument en entree. Elle genere un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle cree si l'utilisateur le souhaite et que le module 'matplotlib' est installe sur le poste de travail." 
+    print("dans resultat_analyse_seq")
     reponse="Initialisation" # Condition utile pour commencer l'etude d'une nouvelle fonction.
     type_seq=""
     premiere_analyse=True # variable servant a ne pas refaire l'annalyse d'une sequence deja effectuee. 
     while reponse!="4":
+        print("while")
         keys=[]
         valeurs=[]
         if type_seq=="": # Seulement si c'est la premiere analyse ou que l'utilisateur a demande a en commencer une nouvelle.
@@ -322,6 +323,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         plot_dispo = -1 
                         con.sendall("resultat_prot".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
                         print("mot cle envoye")
+                        des=des+description
                         resultat_prot(des,sequence,compo,keys,con,plot_dispo)
                         con.sendall("\nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n".encode())
                         reponse=con.recv(1024).decode()
@@ -338,18 +340,23 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         plot_dispo = -1 
                         con.sendall("resultat_adn".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
                         print("mot cle envoye")
+                        des=des+description
                         resultat_ADN(des,sequence, con ,compo,keys,plot_dispo)
-                        con.sendall("\nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n".encode())
-                        reponse=con.recv(1024).decode()
-                        continue
-                   # reponse=="Termine"
+
+                    #reponse=="Termine"
+                    print("termine")
+                    reponse=con.recv(1024).decode()
+                    print("reponse= ", reponse)
+
             elif reponse=="1":
+                print("1")
                 reponse="Initialisation" # Permet de repartir dans la condition menant a l'analyse de la sequence.
                 type_seq=""
-                os.chdir("./..")
+                #os.chdir("./..")
                 premiere_analyse=True # On va passer a une nouvelle analyse on reinitialise donc la variable premiere_analyse.
                 continue # Permet de passer au tour de boucle while suivant, pour retester les conditions sur la variable "reponse".
             elif reponse=="2":
+                print("2")
                 reponse="Initialisation"
                 seq_meme_compo=csa.seq_meme_compo(seq) # Recupere une sequence de meme composition que "seq".
                 description="_seq_meme_compo"
@@ -357,6 +364,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 premiere_analyse=True # Pour les sequences aleatoire, la sequence change a chaque fois donc l'analyse est toujours nouvelle.
                 continue
             elif reponse=="3":
+                print("3")
                 reponse="Initialisation"
                 seq_al=csa.seq_aleatoire(seq,compo) # Recupere une sequence de composition aleatoire de meme type et de meme longueur que "seq".
                 description="_seq_aleatoire"
@@ -364,14 +372,16 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 premiere_analyse=True
                 continue
             else :
+                print("else")
                 con.sendall("\n---------------\nAttention : votre reponse ne correspond a aucune des propositions.\n\nVeuillez reconsiderer votre reponse.\n\nAttention : Relance du programme\n--------------\n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n".encode())
                 reponse=con.recv(1024).decode()
                 continue
 
+            #con.sendall((" \nL analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode()))
+            #reponse=con.recv(1024).decode()
 
-            con.sendall((" \nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode()))
-            reponse=con.recv(1024).decode()
-        if reponse=="4":
-            con.sendall("\n---------------\nArret du programme\nVous etes deconnecte du serveur\n---------------\n".encode())
-            con.shutdown(1)
-            con.close()
+    print("end while")
+    con.sendall("\n---------------\nArret du programme\nVous etes deconnecte du serveur\n---------------\n".encode())
+    con.shutdown(1)
+    con.close()
+

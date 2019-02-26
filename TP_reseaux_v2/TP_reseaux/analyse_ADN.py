@@ -192,7 +192,7 @@ def fenetre_seq(seq,taille, con):# Fonction tres generale mais qui est trop gour
         fenetres=''
     return(fenetres)
 
-def temperature_fusion(seq): # Permet de calculer la temperature de fusion d'une sequence.
+def temperature_fusion(seq, con): # Permet de calculer la temperature de fusion d'une sequence.
     "Cette fonction calcule la temperature de fusion d'une sequence donnee entree."
     T=70+0.44*contenu_C_et_G(seq, con)[0]
     return T
