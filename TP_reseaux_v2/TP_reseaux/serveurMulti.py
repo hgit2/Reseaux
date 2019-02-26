@@ -53,7 +53,7 @@ if __name__ == "__main__":
     while stopBoolServ :
         try: # Premiere etape
             socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            socket.bind(("0.0.0.0",int(sys.argv[1])))
+            socket.bind(("127.0.0.1",int(sys.argv[1])))
             socket.listen(1)
             print("Listening")
             while True: 

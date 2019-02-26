@@ -33,8 +33,10 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
     #    plot_dispo=plt_dispo
 
     print("ecriture fichier")
-    con.sendall(des.encode()) # n'arrive pas a l'envoyer...
+    con.sendall(des.encode()) 
     print("des")
+    W = con.recv(2).decode() # Attendre la fin de l'écriture
+    print('wait' ,W) # 
     # nom_fichier="Analyse_seq_nucl"+des           
     # fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
     # numero_fichier=0
@@ -70,8 +72,8 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
     resultats=resultats.replace(".",",")
  
     con.sendall(resultats.encode())
-#    W = con.recv(2).decode()
-#    print('wait' ,W)
+    W = con.recv(2).decode()
+    print('wait' ,W)
     if len(seq)>=200: # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'annalyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
         print("len de instruction ", len("len(seq)>=200"))
         con.sendall("len(seq)>=200".encode())
@@ -107,6 +109,8 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
 #            con.recv(2).decode()
 #            con.sendall(str(loop).encode())
         con.sendall(resultatsfenetres.encode())
+        W = con.recv(2).decode() 
+        print(W, "wait2")
 #        loop=False
 #        con.sendall(str(loop).encode())
 
@@ -144,8 +148,9 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
         #     plt.savefig(nom_fichier+"(%i).png" % numero_fichier,format='png')
         #     plt.show()
     else:
+        con.sendall("len(seq)<=9".encode())
         con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'annalyse sur la sequence entiere a pu etre effectuee.\nLes analyses par fenetre requierent une sequence de longueur minimum 200 nucleotides.\n---------------\n".encode())
-        sortie.close()
+        #sortie.close()
 
         
 
@@ -162,7 +167,9 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
 #    if plot_dispo==-1:
 #        plot_dispo=plt_dispo
     print("ecriture fichier")
-    con.sendall(des.encode()) # n'arrive pas a l'envoyer...
+    con.sendall(des.encode()) 
+    W = con.recv(2).decode() # Attendre la fin de l'écriture
+    print('wait' ,W) # 
     print("des")
 #    nom_fichier="Annalyse_seq_prot"+des
 #    fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
@@ -198,8 +205,8 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
     #print('len_resultats '  ,len(resultats))
     #con.sendall(str(len(resultats)).encode())
     con.sendall(resultats.encode())
-#    W = con.recv(2).decode() # Attendre la fin de l'écriture
-#    print('wait' ,W) # 
+    W = con.recv(2).decode() # Attendre la fin de l'écriture
+    print('wait' ,W) # 
 
     if len(seq)>=9: # Dans ce "if" recuperation et traitement des resultats par fenetre glissante de 9 acide amines.
         #print("len de instruction ", len("len(seq)>9"))
@@ -217,7 +224,8 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
 
         con.sendall(resultatsfenetres.encode())
         print("resultat sent")
-    
+        W = con.recv(2).decode() 
+        print(W, "wait2")
 
 #        if plot_dispo: # Seulement si le module matplotlib est installe sur le poste de traville utilise.
 #            plt.subplot(212)
@@ -320,14 +328,15 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 #                        plt.ylabel('Nombre de nucleotides')
 #                        plt.title('Composition de la sequence')
                     if type_seq=="prot":
-                        plot_dispo = -1 
+                        #plot_dispo = -1 
                         con.sendall("resultat_prot".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
                         print("mot cle envoye")
                         des=des+description
                         resultat_prot(des,sequence,compo,keys,con,plot_dispo)
-                        con.sendall("\nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n".encode())
-                        reponse=con.recv(1024).decode()
-                        continue
+                        #con.sendall("\nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n".encode())
+                        #reponse=con.recv(1024).decode()
+                        print("reponse dans prot ", reponse)
+                        #continue
 
                     else :
 #                        if plot_dispo :
@@ -337,17 +346,15 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 #                                plt.text(-1,-len(seq)/5, "La sequence etudiee est composee de "+str(len(seq))+"\nnucleotides." , fontsize=10,color='b', bbox=dict(boxstyle="square,pad=0.3",fc="w",ec="b", lw=1))
                         #print("resultat adn")
 
-                        plot_dispo = -1 
+                        #plot_dispo = -1 
                         con.sendall("resultat_adn".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
                         print("mot cle envoye")
                         des=des+description
                         resultat_ADN(des,sequence, con ,compo,keys,plot_dispo)
-
-                    #reponse=="Termine"
+                        print("reponse dans adn ", reponse)
+                    
                     print("termine")
-                    reponse=con.recv(1024).decode()
-                    print("reponse= ", reponse)
-
+                    
             elif reponse=="1":
                 print("1")
                 reponse="Initialisation" # Permet de repartir dans la condition menant a l'analyse de la sequence.
@@ -376,9 +383,11 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 con.sendall("\n---------------\nAttention : votre reponse ne correspond a aucune des propositions.\n\nVeuillez reconsiderer votre reponse.\n\nAttention : Relance du programme\n--------------\n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n".encode())
                 reponse=con.recv(1024).decode()
                 continue
-
-            #con.sendall((" \nL analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode()))
-            #reponse=con.recv(1024).decode()
+            
+            print("ask at the end")
+            con.sendall((" \nL analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode()))
+            reponse=con.recv(1024).decode()
+            print("reponse ", reponse)
 
     print("end while")
     con.sendall("\n---------------\nArret du programme\nVous etes deconnecte du serveur\n---------------\n".encode())

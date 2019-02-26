@@ -33,6 +33,7 @@ def creation_fichier(des) :
 
 def ecriture_adn(s) :
     des=s.recv(1024).decode()
+    s.sendall("ok".encode())
     print('Description de la protéine   :  ' ,des)
     nom_fichier , numero_fichier = creation_fichier(des)
     sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
@@ -46,7 +47,7 @@ def ecriture_adn(s) :
     resultats=s.recv(20000).decode()
     #print("resutat: ", resultats)
     sortie.write(resultats)
-    #s.sendall("ok".encode()) # Attendre la fin de l'écriture avnt la reception de nouvelles informations
+    s.sendall("ok".encode()) # Attendre la fin de l'écriture avnt la reception de nouvelles informations
     instruction=s.recv(13).decode()
     if ">" in instruction:
         # analyses par fenetres
@@ -56,13 +57,16 @@ def ecriture_adn(s) :
         print("resultat received")
         sortie.write(resultatsfenetres)
         print("resultat written")
+        s.sendall("ok".encode())
     sortie.close()
     print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
-    print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
+    print(s.recv(1024).decode())
+    #print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
 
 
 def ecriture_proteine(s) :
     des=s.recv(1024).decode()
+    s.sendall("ok".encode())
     print('Description de la protéine   :  ' ,des)
     nom_fichier , numero_fichier = creation_fichier(des)
     sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
@@ -79,20 +83,23 @@ def ecriture_proteine(s) :
     print("resultats")
     sortie.write(resultats)
     #s.sendall("ok".encode()) # Attendre la fin de l'écriture avnt la reception de nouvelles informations
+    s.sendall("ok".encode())
     instruction=s.recv(10).decode()
+    print("instruction ", instruction)
     if ">" in instruction:
         # analyses par fenetres
         print("fenetres")
         sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
-        resultatsfenetres=s.recv(100000).decode()
+        resultatsfenetres=s.recv(10000).decode()
         print("resultat received")
         sortie.write(resultatsfenetres)
         print("resultat written")
+        s.sendall("ok".encode())
         
     sortie.close()
     print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier)) 
-
-    print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
+    print(s.recv(1024).decode())
+    #print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
 
     
 
