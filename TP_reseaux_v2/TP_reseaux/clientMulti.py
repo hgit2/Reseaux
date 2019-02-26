@@ -33,6 +33,9 @@ while 1:
   elif msg=="":
     s.send("WARNING : empty message".encode())    
 
+  elif msg=="resultat_prot":
+      
+
   # envoi puis reception de la reponse
   s.sendall(msg.encode())
  # s.sendall(b"%" %msg.encode())

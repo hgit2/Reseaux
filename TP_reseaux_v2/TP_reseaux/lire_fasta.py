@@ -45,39 +45,3 @@ def lire_fasta_web(adresse,type_seq): # Recupere une sequence fasta sur internet
         description="La sequence n'est pas referencee."
     return(description,sequence)
 
-#Main:
-
-if __name__=="__main__":
-    print(" -> GSELL Louise")
-    print(" -> Projet L3 BIM 2017, Module : Lecture de fichier fasta et de fiche fasta en ligne")
-    print("\n")
-    print(" -> exemples d'applications des fonctions de ce module\n")
-
-    # Pour tester la fonction "lire_fasta" :
-    
-    fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
-    nom="test"
-    while fichier_existe: # Tant que le fichier nom.py existe le nom change.
-        try: # Test si le fichier "nom.py" existe.
-            fichier=open(nom+".py","r") 
-        except FileNotFoundError :
-            fichier_existe=False
-        else: # Si il existe on change de nom pour ne pas l'ecraser.
-            nom+="bis"
-    fichier=open(nom+".py","w") # Pour ecrire un fichier permettant de tester la fonction "lire_fasta".
-    fichier.write("> Sequence test pour lire fasta\nTEST_RUSSI")
-    fichier.close()
-    des,seq=lire_fasta(nom+".py")
-    print(des+"\n"+seq)
-    print("\n")
-
-    # Pour tester la fonction "lire_fasta_web" :
-    
-    try : # Pour tester si la connexion internet est operationnelle.
-        des,seq=lire_fasta_web("P69464","prot") 
-    except urllib.error.URLError : # Si la connexion internet ne fonctionne pas.
-        print("\n----------------\nAttention : Impossible d'acceder a la base de donnees en ligne.\n")
-        print("Verifiez que vous avez bien une connnection internet active sur ce poste.\n")
-        print("Attention : Le test de lire_fasta_web n'a pas pu etre mene a bien.\n---------------\n")
-        des,seq,type_seq="","",""
-    print(des+"\n"+seq)

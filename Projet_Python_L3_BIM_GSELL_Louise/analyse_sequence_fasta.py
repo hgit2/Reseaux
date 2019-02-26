@@ -1,4 +1,5 @@
-﻿#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+#!/usr/bin/python3
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 #                                                                     Projet Python L3 BIM 2017
@@ -10,7 +11,9 @@ import analyse_ADN as an
 import analyse_proteine as ap
 import creation_seq_aleatoires as csa
 import os
+
 try:
+    
     import matplotlib.pyplot as plt # Permet de tester la presence du module matplotlib sur le poste.
 except ImportError:
     print("---------------\nAttention : Votre poste de travail n'est pas equipe du module matplotlib,\npar consequent le programme ne pourra pas generer de resultats graphiques\nseuls les tableaux de resultats seront generes.\n---------------")
@@ -19,6 +22,8 @@ else:
     plt.rcdefaults() # Permet de reinitialiser les parametres par defaut de matplotlib au cas ou ils aient ete modifier
     import numpy as np
     plt_dispo=True # (Variable globale) Si le module matplotlib est insatlle sur le poste la variable plt_dispo prend la valeur True.
+
+
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -33,7 +38,7 @@ def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1): # Permet d'obtenir les
         for key in compo.keys():
             keys.append(key)
     if plot_dispo==-1: # Permet une utilisation plus generale pour laquelle l'utilisateur n'aurait pas a choisir s'il souhaite ou non tracer les graphiques.
-        plot_dispo=plt_dispo
+        plot_dispo=plot_dispo
     nom_fichier="Analyse_seq_nucl"+des           
     fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
     numero_fichier=0
@@ -68,7 +73,7 @@ def resultat_ADN(des,seq,compo=-1,keys=-1,plot_dispo=-1): # Permet d'obtenir les
                 if rapportCpG[i]>=0.6 and CGfenetre[i]>=50: # Permet de verifier la presence d'ilot CpG.
                     ilot_CpG=True
                     resultatsfenetres=str(i+1)+"\t%.3f" % CGfenetre[i] +"\t"+str(CpGfenetre[i])+"\t%.3f" % rapportCpG[i] +"\tOui\n" # Redaction des resultats obtenus pour la fenetre i (si presence d'un ilot CpG,cf "else" sinon)
-                    if plot_dispo:
+                    if plot_dispo != -1:
                         plt.subplot(222) # Ensemble de commande permettant de faire apparaitre les ilots CpG en rouge sur les graphiques.
                         plt.plot([i+1],[rapportCpG[i]],'.r')
                         plt.subplot(224)
@@ -148,6 +153,7 @@ def resultat_prot(des,seq,compo,keys,plot_dispo=-1): # Permet d'obtenir les tabl
     num_fenetre=[]
     sortie.write("\taa hydrophobes\taa charges (%)\tcharge net") # Redaction du tableau de resultat de l'etude sur la sequence entiere (sur cette ligne et les 5 suivantes).
     resultats="\n srquence entiere\t"+str(nb_aa_hydrophobe)+"\t%.3f" % aa_charges +"\t"+str(charge)
+    print('length keys ', len(keys))
     for ele in keys:
         sortie.write("\t"+str(ele))
         resultats+="\t"+str(compo[str(ele)])
@@ -193,8 +199,7 @@ def resultat_prot(des,seq,compo,keys,plot_dispo=-1): # Permet d'obtenir les tabl
         print("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'analyse sur la sequence entiere a pu etre effectuee.\nLes annalyses par fenetre requierent une sequence de longueur minimum 9 acides amines.\n---------------")
         sortie.close()
 
-
-        
+       
 
 def resultats_analyse_seq(): # Permet d'optenir les resultats de l'annalyse d'une sequence ADN ou proteique sous forme de tableaux et de graphiques  
     "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet de realiser une etude de sequence nucleique ou proteique au format fasta, cette etude constiste dans les deux cas en une evalusation de la composition de la sequence puis en une etude plus specifique au type de la sequence (se referer a resultat_prot.__doc__ pour plus de deatils sur l'etude des sequences proteique et a resultat_ADN.__doc__ pour les sequences nucleique). Cette procedure ne prend aucun argument en entree. Elle genere un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle cree si l'utilisateur le souhaite et que le module 'matplotlib' est installe sur le poste de travail." 
@@ -224,10 +229,14 @@ def resultats_analyse_seq(): # Permet d'optenir les resultats de l'annalyse d'un
             sequence=seq # Permet de garder en memoire la sequence de reference de chaque analyse dans la variable 'seq'.
             description=""
         elif type_seq!="":
+
             if reponse=="Initialisation":
+                
                 if premiere_analyse: # Si une analyse identique a deja ete effectuee on ne la refait pas.
+                    print('ok')
+                    print('plt_dispo' , plt_dispo)
                     if plt_dispo: # Pour permettre a l'utilisateur de choisir s'il veut creer des graphiques ou non seulement dans le cas ou le module matplotlib est disponible et donc la creation de graphiques possible.
-                        plot_dispo=input(" \nSi vous souhaitez que le programme trace des graphiques en se basant \nsur l'analyse par fenetre (l'analyse sera plus longue), tapez 1 \nsinon, tapez 2 : ")
+                        plot_dispo=input("Si vous souhaitez que le programme trace des graphiques en se basant \nsur l'analyse par fenetre (l'analyse sera plus longue), tapez 1 \nsinon, tapez 2 : ")
                         while plot_dispo!="1" and plot_dispo!="2":
                             print("\n---------------\nAttention : votre reponse ne correspond a aucune des propositions.\n\nVeuillez reconsiderer votre reponse.\n\nAttention : Relance du programme\n--------------\n")
                             plot_dispo=input(" \nSi vous souhaitez que le programme trace des graphiques en se basant \nsur l'analyse par fenetre (l'analyse sera plus longue), tapez 1 \nsinon, tapez 2 : ")
@@ -236,7 +245,7 @@ def resultats_analyse_seq(): # Permet d'optenir les resultats de l'annalyse d'un
                         else:
                             plot_dispo=False
                     else:
-                        plot_dipo=True
+                        plot_dispo=False
                     seq=ap.code3aa1(sequence) # Permet de passer du code d'acide amines 3 lettres au code 1 lettre si besoin (si 'sequence' est nucleotidique ou deja en code 1 lettre rien ne change.)
                     compo=ap.composition(sequence)
                     for key in compo.keys():
@@ -254,7 +263,8 @@ def resultats_analyse_seq(): # Permet d'optenir les resultats de l'annalyse d'un
                     if type_seq=="prot":
                         resultat_prot(description,sequence,compo,keys,plot_dispo)
                     else :
-                        if plot_dispo :
+                        plot_dispo = -1
+                        if plot_dispo != -1 :
                             if "N" in compo:
                                 plt.text(-1,-len(seq)/5, "Attention il y a "+str(compo["N"])+" 'N' dans la sequence etudiee\n de longueur : "+str(len(seq))+" nucleotides." , fontsize=10,color='r' , bbox=dict(boxstyle="square,pad=0.3",fc="w",ec="r", lw=1))
                             else:
