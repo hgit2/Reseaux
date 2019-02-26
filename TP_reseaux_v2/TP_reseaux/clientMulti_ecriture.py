@@ -76,6 +76,7 @@ def ecriture_proteine(s) :
         loop=s.recv(4).decode()
    
     resultats=s.recv(20000).decode()
+    print("resultats")
     sortie.write(resultats)
     #s.sendall("ok".encode()) # Attendre la fin de l'écriture avnt la reception de nouvelles informations
     instruction=s.recv(10).decode()
@@ -83,7 +84,7 @@ def ecriture_proteine(s) :
         # analyses par fenetres
         print("fenetres")
         sortie.write("\n \n \nFenetres\thydrophobicite moyenne\n")
-        resultatsfenetres=s.recv(10000).decode()
+        resultatsfenetres=s.recv(100000).decode()
         print("resultat received")
         sortie.write(resultatsfenetres)
         print("resultat written")
