@@ -153,9 +153,11 @@ def rapport_CpG_nb_CpG_contenu_C_et_G(seq, con, taille=-1,comp=-1 ): # Renvoie l
                     dico=comp
             else: # Si l'analyse se fait par fentre la composition donnee en entree ne permet pas de calculer la composition par sequence. 
                 dico=composition(fenetre)
+             
             if "C" in dico.keys() and "G" in dico.keys():
                 nb_attendu=(dico["C"]*dico["G"])/taille
                 rapports.append(nb_observe[i]/nb_attendu)
+               
                 contenu.append((dico['C']+dico['G'])/taille*100) # Calcule le pourcentage de C+G dans la fenetre et de l'ajouter a la liste "contenu".
             elif "C" in dico.keys():
                 contenu.append(dico['C']/taille*100) # Calcule le poucentage de C dans la fenetre quand la fenetre ne contient pas de "G".

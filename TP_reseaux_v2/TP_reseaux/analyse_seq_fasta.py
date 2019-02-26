@@ -75,7 +75,7 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
     if len(seq)>=200: # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'annalyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
         print("len de instruction ", len("len(seq)>=200"))
         con.sendall("len(seq)>=200".encode())
-        rapportCpG,CpGfenetre,CGfenetre=an.rapport_CpG_nb_CpG_contenu_C_et_G(seq, con, 200)# Recuperation du porcentage de C+G dans chaque fenetre, du nombre de "CG" et du rapport CpG.
+        rapportCpG,CpGfenetre,CGfenetre=an.rapport_CpG_nb_CpG_contenu_C_et_G(seq, con, 30)# Recuperation du porcentage de C+G dans chaque fenetre, du nombre de "CG" et du rapport CpG.
         ilot_CpG=False
         plt_rapportCpG=True
        # print("bf loop")
@@ -214,10 +214,11 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
             resultatsfenetres_suite=resultatsfenetres_suite.replace(".",",") # On remplace les points par des virgules pour que les valeurs soient reconnus comme des nombres par Excel
             resultatsfenetres = resultatsfenetres + resultatsfenetres_suite
             #sortie.write(resultatsfenetres)
+
         con.sendall(resultatsfenetres.encode())
         print("resultat sent")
     
-    
+
 #        if plot_dispo: # Seulement si le module matplotlib est installe sur le poste de traville utilise.
 #            plt.subplot(212)
 #            plt.title("Hydrophobicite moyennes de chaque fenetre glissante de 9 acides amines de la sequence")
@@ -324,6 +325,9 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         print("mot cle envoye")
                         des=des+description
                         resultat_prot(des,sequence,compo,keys,con,plot_dispo)
+                        con.sendall("\nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n".encode())
+                        reponse=con.recv(1024).decode()
+                        continue
 
                     else :
 #                        if plot_dispo :
@@ -338,10 +342,12 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         print("mot cle envoye")
                         des=des+description
                         resultat_ADN(des,sequence, con ,compo,keys,plot_dispo)
+
                     #reponse=="Termine"
                     print("termine")
                     reponse=con.recv(1024).decode()
                     print("reponse= ", reponse)
+
             elif reponse=="1":
                 print("1")
                 reponse="Initialisation" # Permet de repartir dans la condition menant a l'analyse de la sequence.
@@ -370,6 +376,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 con.sendall("\n---------------\nAttention : votre reponse ne correspond a aucune des propositions.\n\nVeuillez reconsiderer votre reponse.\n\nAttention : Relance du programme\n--------------\n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n".encode())
                 reponse=con.recv(1024).decode()
                 continue
+
             #con.sendall((" \nL analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode()))
             #reponse=con.recv(1024).decode()
 
@@ -377,3 +384,4 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
     con.sendall("\n---------------\nArret du programme\nVous etes deconnecte du serveur\n---------------\n".encode())
     con.shutdown(1)
     con.close()
+

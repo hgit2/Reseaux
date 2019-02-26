@@ -91,6 +91,7 @@ def ecriture_proteine(s) :
         
     sortie.close()
     print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier)) 
+
     print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
 
     
@@ -109,12 +110,15 @@ while 1:
     if data=="resultat_prot":
         print("Analyse en cours...\n")
         ecriture_proteine(s)
+      
 
     elif data=="resultat_adn":
         print("Analyse en cours...\n")
         ecriture_adn(s)
+        #data = s.recv(1024).decode()
+        #msg = input('>> ')
 
-            
+
     else :
         print('if not resultats_prot the variable data is  :  ' ,data) # on affiche la reponse
         
@@ -129,8 +133,10 @@ while 1:
         
     else:        
     # envoi puis reception de la reponse
+
         s.sendall(msg.encode())
     print("after sendall")
+
 
 # fermeture de la connexion
 s.close()
