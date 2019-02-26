@@ -29,9 +29,9 @@ def signal_handler(signal, frame):
     sys.exit(0)
 
 def handle_com(con, addr):
-        print("process identity %s" %(addr,))
+        print("process identity %s, %s" %(addr[0],addr[1]))
         try:
-            print("connection information %s at %s\n" %(con, addr))
+            print("connection information %s at %s, %s\n" %(con, addr[0],addr[1]))
             while True:
                 print("\nBEFOR asf\n")
                 asf.resultats_analyse_seq(con, addr)
@@ -44,7 +44,7 @@ def handle_com(con, addr):
                 print("finally : Closed socket")
             except:
                 print("\nAFTER asf\n")
-                print("The process %s has been stopped by user"%(addr))
+                print("The process %s, %s has been stopped by user"%(addr[0],addr[1]))
 
 class Serveur:
     def __init__(self):
