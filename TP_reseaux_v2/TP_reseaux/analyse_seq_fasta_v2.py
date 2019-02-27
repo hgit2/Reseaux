@@ -322,8 +322,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         print("mot cle envoye prot")
                         rep=con.recv(255).decode()
                         print("rep mot cle prot =%s"%rep)
-                        des=des+description
-                        resultat_prot(des,sequence,compo,keys,con,plot_dispo)
+                        resultat_prot(des+description,sequence,compo,keys,con,plot_dispo)
                         print("reponse dans prot ", reponse)
 
                     else :
@@ -339,8 +338,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         print("mot cle envoye adn")
                         rep=con.recv(255).decode()
                         print("rep mot cle prot =%s"%rep)
-                        des=des+description
-                        resultat_ADN(des,sequence, con ,compo,keys,plot_dispo)
+                        resultat_ADN(des+description,sequence, con ,compo,keys,plot_dispo)
                         print("reponse dans adn ", reponse)
                     
                     print("termine")

@@ -28,11 +28,12 @@ def creation_repertoire(des):
 
 
 def creation_fichier(nom_fichier) :
+    nom_fichier=nom_fichier.replace("\n","")
     fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
     numero_fichier=0
     while fichier_existe: # Tant que le fichier "nom_fichier.png" existe le nom change.
-        try: 
-            sortie=open(nom_fichier+"(%i).py" % numero_fichier,'r') # Test si le fichier "nom_fichier.py" existe.
+        try:
+            sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'r') # Test si le fichier "nom_fichier.py" existe.
         except FileNotFoundError:
             fichier_existe=False
         else:
@@ -47,7 +48,7 @@ def ecriture_adn(s) :
     nom=s.recv(1024).decode()
     nom_fichier, numero_fichier = creation_fichier(nom)
     s.sendall("OK".encode())
- 
+
     sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
 
     size=s.recv(1024).decode()
@@ -55,7 +56,8 @@ def ecriture_adn(s) :
     file=s.recv(int(size)).decode()
     sortie.write(file)  
     sortie.close()
-    print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
+    #print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
+    print ("Results are available in"+nom_fichier+"(%i).txt"% numero_fichier)
     print(s.recv(1024).decode())
 
 def ecriture_proteine(s) :
@@ -73,7 +75,8 @@ def ecriture_proteine(s) :
     file=s.recv(int(size)).decode()
     sortie.write(file)  
     sortie.close()
-    print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
+    #print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
+    print ("Results are available in"+nom_fichier+"(%i).txt"% numero_fichier)
     print(s.recv(1024).decode())
     
 
@@ -130,5 +133,7 @@ while 1:
 s.close()
 print("fin du client TCP")
 
+if __name__=="__main__":
+    creation_fichier("Titoun_et_Lou")
 
 
