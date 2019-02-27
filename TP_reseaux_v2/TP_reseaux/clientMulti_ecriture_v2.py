@@ -51,8 +51,8 @@ def ecriture_adn(s) :
 
 
 #---ATTENTION ce n'est pas au client de faire print de ca normalement !!!!!!!!---#
-    print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
-
+#    print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
+    print(s.recv(1024).decode())
 
 def ecriture_proteine(s) :
     nom=s.recv(1024).decode()
@@ -72,8 +72,8 @@ def ecriture_proteine(s) :
     print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
 
 #---ATTENTION ce n'est pas au client de faire print de ca normalement !!!!!!!!---#
-    print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
-
+#    print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
+    print(s.recv(1024).decode())
     
 
 

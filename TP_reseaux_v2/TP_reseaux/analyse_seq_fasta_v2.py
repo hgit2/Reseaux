@@ -65,7 +65,7 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
         fichier+="\t%s"%(ele)
         resultats+="\t"+str(compo[str(ele)])
     resultats=resultats.replace(".",",")
-    fichier+=resultats
+    fichier+=resultats+"\n\n"
  
     if len(seq)>=200: # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'annalyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
         rapportCpG,CpGfenetre,CGfenetre=an.rapport_CpG_nb_CpG_contenu_C_et_G(seq, con, 200)# Recuperation du porcentage de C+G dans chaque fenetre, du nombre de "CG" et du rapport CpG.
