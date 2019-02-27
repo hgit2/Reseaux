@@ -275,6 +275,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 #            #print("ecriture d'un fichier")
             
             con.sendall(("creation dossier:%s"%des).encode())
+            con.recv(255).decode()
 ##            try:
 ##                os.mkdir("Analyse_"+des) # Permet de tester si le dossier '"Analyse_"+des' existe.
 ##            except FileExistsError:
@@ -371,6 +372,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 continue
             else :
                 print("else")
+                print("reponse else : ", reponse)
                 con.sendall("\n---------------\nAttention : votre reponse ne correspond a aucune des propositions.\n\nVeuillez reconsiderer votre reponse.\n\nAttention : Relance du programme\n--------------\n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n".encode())
                 reponse=con.recv(1024).decode()
                 continue
@@ -378,6 +380,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
             print("ask at the end")
             con.sendall((" \nL analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode()))
             reponse=con.recv(1024).decode()
+            print("reponse at the end : ", reponse)
             print("reponse ", reponse)
 
     print("end while")

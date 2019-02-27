@@ -96,17 +96,21 @@ while 1:
         s.sendall("OK".encode())
         print("Analyse en cours...\n")
         ecriture_adn(s)
+        
     elif data.split(":")[0]=="creation dossier":
         des=data.split(":")[1]
         creation_repertoire(des)
         s.sendall("OK".encode())
         continue
+    
     elif data=="nouvelle analyse":
         os.chdir("./..")
         s.sendall("OK".encode())
         continue
+    
     else :
-        print('if not resultats_prot the variable data is  :  ' ,data) # on affiche la reponse
+        #print('if not resultats_prot the variable data is  :  ' ,data) # on affiche la reponse
+        print(data)
         
     msg = input('>> ')
     
