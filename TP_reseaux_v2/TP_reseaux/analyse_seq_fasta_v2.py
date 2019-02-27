@@ -10,7 +10,7 @@ import recuperation_sequence_fasta as rs
 import analyse_ADN as an
 import analyse_proteine as ap
 import creation_seq_aleatoires as csa
-import os
+#import os
 import socket
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -243,6 +243,9 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
         con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'analyse sur la sequence entiere a pu etre effectuee.\nLes annalyses par fenetre requierent une sequence de longueur minimum 9 acides amines.\n---------------\n".encode())
         #sortie.close()
 
+
+        
+
 def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'annalyse d'une sequence ADN ou proteique sous forme de tableaux et de graphiques  
     "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet de realiser une etude de sequence nucleique ou proteique au format fasta, cette etude constiste dans les deux cas en une evalusation de la composition de la sequence puis en une etude plus specifique au type de la sequence (se referer a resultat_prot.__doc__ pour plus de deatils sur l'etude des sequences proteique et a resultat_ADN.__doc__ pour les sequences nucleique). Cette procedure ne prend aucun argument en entree. Elle genere un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle cree si l'utilisateur le souhaite et que le module 'matplotlib' est installe sur le poste de travail." 
     print("dans resultat_analyse_seq")
@@ -270,6 +273,8 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 #                reponse="4"
 #                continue # Permet de passer au tour de boucle while suivant, or reponse="4" donc le programme s'arrete.
 #            #print("ecriture d'un fichier")
+            
+            con.sendall(("creation dossier:%s"%des).encode())
 ##            try:
 ##                os.mkdir("Analyse_"+des) # Permet de tester si le dossier '"Analyse_"+des' existe.
 ##            except FileExistsError:
@@ -314,6 +319,8 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         #plot_dispo = -1 
                         con.sendall("resultat_prot".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
                         print("mot cle envoye prot")
+                        rep=con.recv(255).decode()
+                        print("rep mot cle prot =%s"%rep)
                         des=des+description
                         resultat_prot(des,sequence,compo,keys,con,plot_dispo)
                         print("reponse dans prot ", reponse)
@@ -329,6 +336,8 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                         #plot_dispo = -1 
                         con.sendall("resultat_adn".encode()) # mot clé pour lancer l'ecriture du fichier resultat chez le client
                         print("mot cle envoye adn")
+                        rep=con.recv(255).decode()
+                        print("rep mot cle prot =%s"%rep)
                         des=des+description
                         resultat_ADN(des,sequence, con ,compo,keys,plot_dispo)
                         print("reponse dans adn ", reponse)
@@ -340,6 +349,8 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 reponse="Initialisation" # Permet de repartir dans la condition menant a l'analyse de la sequence.
                 type_seq=""
                 #os.chdir("./..")
+                con.sendall("nouvelle analyse".encode())
+                rep=con.recv(255).decode()
                 premiere_analyse=True # On va passer a une nouvelle analyse on reinitialise donc la variable premiere_analyse.
                 continue # Permet de passer au tour de boucle while suivant, pour retester les conditions sur la variable "reponse".
             elif reponse=="2":

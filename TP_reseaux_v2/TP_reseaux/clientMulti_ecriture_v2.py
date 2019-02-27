@@ -11,12 +11,20 @@ import socket
 import select
 import time
 import sys
+import os
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 global plot_dispo 
 plot_dispo=False # à gérer PLUS TARD
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
+def creation_repertoire(des):
+    try:
+        os.mkdir("Analyse_"+des) # Permet de tester si le dossier '"Analyse_"+des' existe.
+    except FileExistsError:
+        premiere_analyse=False # Si le dossier existe deja alors l'analyse de la sequence entree existe deja, on ne souhaite pas la refaire inutilement.
+        print(" \nL'analyse de cette sequence a deja ete effectuee, vous pouvez \napprofondir cette analyse ou effectuer une annalyse sur une nouvelle sequence. \n")
+    os.chdir("./Analyse_"+des) # Si le dossier existe deja il n'est pas cree et on rentre simplement dedans, sinon il a deja ete creer dans le 'try' et donc on rentre dedans.
 
 
 def creation_fichier(nom_fichier) :
@@ -48,10 +56,6 @@ def ecriture_adn(s) :
     sortie.write(file)  
     sortie.close()
     print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
-
-
-#---ATTENTION ce n'est pas au client de faire print de ca normalement !!!!!!!!---#
-#    print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
     print(s.recv(1024).decode())
 
 def ecriture_proteine(s) :
@@ -70,9 +74,6 @@ def ecriture_proteine(s) :
     sortie.write(file)  
     sortie.close()
     print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
-
-#---ATTENTION ce n'est pas au client de faire print de ca normalement !!!!!!!!---#
-#    print("\nL'analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ")
     print(s.recv(1024).decode())
     
 
@@ -87,14 +88,23 @@ print("Connection on {}".format(sys.argv[1]))
 while 1:  
     data = s.recv(1024).decode()
     if data=="resultat_prot":
+        s.sendall("OK".encode())
         print("Analyse en cours...\n")
         ecriture_proteine(s)
 
     elif data=="resultat_adn":
+        s.sendall("OK".encode())
         print("Analyse en cours...\n")
         ecriture_adn(s)
-
-            
+    elif data.split(":")[0]=="creation dossier":
+        des=data.split(":")[1]
+        creation_repertoire(des)
+        s.sendall("OK".encode())
+        continue
+    elif data=="nouvelle analyse":
+        os.chdir("./..")
+        s.sendall("OK".encode())
+        continue
     else :
         print('if not resultats_prot the variable data is  :  ' ,data) # on affiche la reponse
         
