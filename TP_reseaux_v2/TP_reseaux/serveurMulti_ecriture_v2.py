@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -33,7 +34,7 @@ def handle_com(con, addr):
         try:
             print("connection information %s at %s, %s\n" %(con, addr[0],addr[1]))
             while True:
-                print("\nBEFOR asf\n")
+                print("\nBEFOR asf \n")
                 asf.resultats_analyse_seq(con, addr)
                 print("\nAFTER asf\n")
         except:

@@ -80,6 +80,20 @@ def ecriture_proteine(s) :
     print(s.recv(1024).decode())
     
 
+def seq_mm_compo(s) :
+    print('\n')
+    nom_fichier=s.recv(1024).decode()
+    nom_fichier, numero_fichier = creation_fichier(nom_fichier)
+    s.sendall("OK".encode())
+    sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
+    size=s.recv(1024).decode()
+    s.sendall("OK".encode())
+    file=s.recv(int(size)).decode()
+    sortie.write(file)  
+    sortie.close()
+    #print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
+    print ("Results are available in : "+nom_fichier+"(%i).txt"% numero_fichier)
+    print(s.recv(1024).decode())
 
 #creation de la socket puis connexion
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -98,14 +112,20 @@ while 1:
     elif data=="resultat_adn":
         s.sendall("OK".encode())
         print("Analyse en cours...\n")
-        ecriture_adn(s)
+        ecriture_adn(s)    
         
     elif data.split(":")[0]=="creation dossier":
         des=data.split(":")[1]
         creation_repertoire(des)
         s.sendall("OK".encode())
         continue
-    
+
+    elif data=="seq_mm_compo":
+        s.sendall("OK".encode())
+        print("Analyse en cours...\n")
+        seq_mm_compo(s)
+
+
     elif data=="nouvelle analyse":
         os.chdir("./..")
         s.sendall("OK".encode())

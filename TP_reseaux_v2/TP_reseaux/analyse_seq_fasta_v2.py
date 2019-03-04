@@ -299,10 +299,11 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 #                            plot_dispo=False
 #                    else:
 #                        plot_dipo=True
-                    print("genial")
+                    print("genial ")
+                   
                     seq=ap.code3aa1(sequence) # Permet de passer du code d'acide amines 3 lettres au code 1 lettre si besoin (si 'sequence' est nucleotidique ou deja en code 1 lettre rien ne change.)
                     compo=ap.composition(sequence)
-                    print(compo)
+                    
                     
                     for key in compo.keys():
                         keys.append(key)
@@ -354,12 +355,34 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 continue # Permet de passer au tour de boucle while suivant, pour retester les conditions sur la variable "reponse".
             elif reponse=="2":
                 print("2")
+                
+                con.sendall("seq_mm_compo".encode())
+                rep=con.recv(255).decode()
+                print('REP \n', rep)
                 reponse="Initialisation"
+                nom_fichier_seq_mm_compo ="seq_mm_compo_" + des 
+                nom_fichier_seq_mm_compo =nom_fichier_seq_mm_compo.encode()
+                con.sendall(nom_fichier_seq_mm_compo)
+                rep= con.recv(255).decode() # Attendre la création du fichier par le client
                 seq_meme_compo=csa.seq_meme_compo(seq) # Recupere une sequence de meme composition que "seq".
+                seq_meme_compo= seq_meme_compo.encode()
+
+                print("taille du buffer : %s"%str(len(seq_meme_compo)))
+
+                taille=str(len(seq_meme_compo))
+                con.sendall(taille.encode())
+                rep=con.recv(255).decode() # Attendre la réception de la taille du fichier par le client
+                print("REP IN COND 2=%s"%rep)
+                if rep=="OK":
+                    con.sendall(seq_meme_compo)
+             
+
                 description="_seq_meme_compo"
                 sequence=seq_meme_compo # Ecrase "sequence" mais pas "seq" ce qui permet de garder en memoire la sequence de reference de chaque analyse dans la variable 'seq'.
                 premiere_analyse=True # Pour les sequences aleatoire, la sequence change a chaque fois donc l'analyse est toujours nouvelle.
-                continue
+                print("Reponse dans mm compo : ", reponse)
+                #continue
+
             elif reponse=="3":
                 print("3")
                 reponse="Initialisation"
