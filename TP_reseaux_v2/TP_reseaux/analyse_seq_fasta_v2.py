@@ -355,10 +355,9 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 continue # Permet de passer au tour de boucle while suivant, pour retester les conditions sur la variable "reponse".
             elif reponse=="2":
                 print("2")
-                
                 con.sendall("seq_mm_compo".encode())
                 rep=con.recv(255).decode()
-                print('REP \n', rep)
+               
                 reponse="Initialisation"
                 nom_fichier_seq_mm_compo ="seq_mm_compo_" + des 
                 nom_fichier_seq_mm_compo =nom_fichier_seq_mm_compo.encode()
@@ -372,7 +371,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 taille=str(len(seq_meme_compo))
                 con.sendall(taille.encode())
                 rep=con.recv(255).decode() # Attendre la réception de la taille du fichier par le client
-                print("REP IN COND 2=%s"%rep)
+              #  print("REP IN COND 2=%s"%rep)
                 if rep=="OK":
                     con.sendall(seq_meme_compo)
              
@@ -386,11 +385,25 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
             elif reponse=="3":
                 print("3")
                 reponse="Initialisation"
+                con.sendall("seq_aleatoire".encode())
+                rep=con.recv(255).decode()
+                nom_fichier_seq_aleatoire ="seq_aleatoire_" + des 
+                nom_fichier_seq_aleatoire =nom_fichier_seq_aleatoire.encode()
+                con.sendall(nom_fichier_seq_aleatoire)
                 seq_al=csa.seq_aleatoire(seq,compo) # Recupere une sequence de composition aleatoire de meme type et de meme longueur que "seq".
+                seq_al = seq_al.encode()
+                print("taille du buffer : %s"%str(len(seq_al)))
+                taille=str(len(seq_al))
+                con.sendall(taille.encode())
+                rep=con.recv(255).decode() # Attendre la réception de la taille du fichier par le client
+                print("REP IN COND 3 =%s"%rep)
+                if rep=="OK":
+                    con.sendall(seq_al)
+
                 description="_seq_aleatoire"
                 sequence=seq_al # Ecrase "sequence" mais pas "seq" ce qui permet de garder en memoire la sequence de reference de chaque analyse dans la variable 'seq'
                 premiere_analyse=True
-                continue
+               
             else :
                 print("else")
                 print("reponse else : ", reponse)

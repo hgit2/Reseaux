@@ -95,6 +95,22 @@ def seq_mm_compo(s) :
     print ("Results are available in : "+nom_fichier+"(%i).txt"% numero_fichier)
     print(s.recv(1024).decode())
 
+def seq_aleatoire(s) :    
+    print('\n')
+    nom_fichier=s.recv(1024).decode()
+    nom_fichier, numero_fichier = creation_fichier(nom_fichier)
+    s.sendall("OK".encode())
+    sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
+    size=s.recv(1024).decode()
+    s.sendall("OK".encode())
+    file=s.recv(int(size)).decode()
+    sortie.write(file)  
+    sortie.close()
+    print ("Results are available in : "+nom_fichier+"(%i).txt"% numero_fichier)
+    print(s.recv(1024).decode())
+
+
+
 #creation de la socket puis connexion
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("127.0.0.1",int(sys.argv[1])))
@@ -124,6 +140,11 @@ while 1:
         s.sendall("OK".encode())
         print("Analyse en cours...\n")
         seq_mm_compo(s)
+
+    elif data=="seq_aleatoire":
+        s.sendall("OK".encode())
+        print("Analyse en cours...\n")
+        seq_aleatoire(s)
 
 
     elif data=="nouvelle analyse":
