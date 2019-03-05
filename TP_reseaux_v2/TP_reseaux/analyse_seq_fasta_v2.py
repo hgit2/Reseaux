@@ -353,6 +353,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 rep=con.recv(255).decode()
                 premiere_analyse=True # On va passer a une nouvelle analyse on reinitialise donc la variable premiere_analyse.
                 continue # Permet de passer au tour de boucle while suivant, pour retester les conditions sur la variable "reponse".
+                
             elif reponse=="2":
                 print("2")
                 con.sendall("seq_mm_compo".encode())

@@ -78,7 +78,34 @@ def ecriture_proteine(s) :
     #print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
     print ("Results are available in"+nom_fichier+"(%i).txt"% numero_fichier)
     print(s.recv(1024).decode())
+
+
+def envoie_fasta(description,seq) :
+    "Cette fonction envoie au serveur des données fasta stockées en local."
+    description= description.encode()
+    seq = seq.encode()
+    s.sendall(description)
+    rep = s.recv(2).decode() # Le serveur a bien recu la description
+    taille=str(len(seq))
+    s.sendall(taille.encode())
+    rep = s.recv(2).decode() # Le serveur a bien recu la description
+    #print("TAILLE BIEN RECU ")
+    s.sendall(seq)
     
+def lecture_fasta_loc(adresse) :
+    "Cette fonction permet de recuperer une sequence et sa description dans un fichier place dans le repertoire courant grace a son nom donne en argument (entre guillemets, sans oublier l'extension)."
+    sequence=""
+    fasta=open(adresse,"r") # Permet d'ouvrir un fichier existant pour lire les informations qu'il contient.
+    ligne=fasta.readline() # Affecte a la variable ligne la premiere ligne de "fasta" sous forme de chaine de caratere.
+    while ligne[0] != ">": # Permet de recuperer la description de la sequence qui toujours est precedee de ">" au format fasta.
+        ligne=fasta.readline()
+    description=ligne[1:].strip()
+    while ligne != "": # Permet de recuperer la sequence et de s'arreter lorque la lecture a atteint la findu fichier.
+        ligne=fasta.readline().strip()
+        sequence+=ligne
+    fasta.close() # Permet de refermer le fichier "fasta" ouvert au debut de la fonction. 
+    return(description,sequence)
+
 
 
 #creation de la socket puis connexion
@@ -123,7 +150,16 @@ while 1:
         break
     elif msg=="":
         s.sendall("WARNING : empty message".encode())    
+    
+    elif "." in msg:
+        print("Traitement d'une séquence fasta en locale...")
+        s.sendall(msg.encode())
+        file_name = msg
+        description,seq = lecture_fasta_loc(file_name)
+        envoie_fasta(description,seq)
+    
         
+
     else:        
     # envoi puis reception de la reponse
         s.sendall(msg.encode())
