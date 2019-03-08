@@ -18,13 +18,20 @@ global plot_dispo
 plot_dispo=False # à gérer PLUS TARD
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
-def creation_repertoire(des):
+def creation_repertoire(des,s):
+    premiere_analyse=True
     try:
         os.mkdir("Analyse_"+des) # Permet de tester si le dossier '"Analyse_"+des' existe.
     except FileExistsError:
         premiere_analyse=False # Si le dossier existe deja alors l'analyse de la sequence entree existe deja, on ne souhaite pas la refaire inutilement.
         print(" \nL'analyse de cette sequence a deja ete effectuee, vous pouvez \napprofondir cette analyse ou effectuer une annalyse sur une nouvelle sequence. \n")
     os.chdir("./Analyse_"+des) # Si le dossier existe deja il n'est pas cree et on rentre simplement dedans, sinon il a deja ete creer dans le 'try' et donc on rentre dedans.
+    premiere_analyse=str(premiere_analyse)
+   # print("Premier analyse : %s"%premiere_analyse)
+    premiere_analyse=premiere_analyse.encode()
+    s.sendall(premiere_analyse)
+    s.recv(255).decode()
+
 
 
 def creation_fichier(nom_fichier) :
@@ -48,62 +55,84 @@ def ecriture_adn(s) :
     nom=s.recv(1024).decode()
     nom_fichier, numero_fichier = creation_fichier(nom)
     s.sendall("OK".encode())
-
     sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
-
-    size=s.recv(1024).decode()
+    message=s.recv(1024).decode()
+    if message.split('\n')[1] == "Attention : Execution incomplete du programme.":
+        print(message)
+        s.sendall("OK".encode())
+        size=s.recv(1024).decode()
+    else :
+        size=message
     s.sendall("OK".encode())
     file=s.recv(int(size)).decode()
     sortie.write(file)  
     sortie.close()
     #print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
-    print ("Results are available in"+nom_fichier+"(%i).txt"% numero_fichier)
+    print ("Results are available in "+nom_fichier+"(%i).txt"% numero_fichier)
     print(s.recv(1024).decode())
+
+
 
 def ecriture_proteine(s) :
     nom=s.recv(1024).decode()
     print("nom:%s"%nom)
     nom_fichier, numero_fichier = creation_fichier(nom)
     s.sendall("OK".encode())
-    
     sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
-    print("creation du fichier")
-    size=s.recv(1024).decode()
-    print("size=%s"%size)
+    message=s.recv(1024).decode()
+    if message.split('\n')[1] == "Attention : Execution incomplete du programme.":
+        print(message)
+        s.sendall("OK".encode())
+        size=s.recv(1024).decode()
+    else :
+        size=message
     s.sendall("OK".encode())
-    print("Ok envoye au serveur")
     file=s.recv(int(size)).decode()
     sortie.write(file)  
     sortie.close()
     #print ("Results are available in {0}({1})".format(nom_fichier, numero_fichier))
-    print ("Results are available in"+nom_fichier+"(%i).txt"% numero_fichier)
+    print ("Results are available in "+nom_fichier+"(%i).txt"% numero_fichier)
     print(s.recv(1024).decode())
+
 
 
 def envoie_fasta(description,seq) :
     "Cette fonction envoie au serveur des données fasta stockées en local."
-    description= description.encode()
-    seq = seq.encode()
-    s.sendall(description)
-    rep = s.recv(2).decode() # Le serveur a bien recu la description
-    taille=str(len(seq))
-    s.sendall(taille.encode())
-    rep = s.recv(2).decode() # Le serveur a bien recu la description
-    #print("TAILLE BIEN RECU ")
-    s.sendall(seq)
+    if description=="entree":
+        description= description.encode()
+        s.sendall(description)
+        rep = s.recv(2).decode()
+    else:
+        description= description.encode()
+        seq = seq.encode()
+        s.sendall(description)
+        rep = s.recv(2).decode() # Le serveur a bien recu la description
+        taille=str(len(seq))
+        s.sendall(taille.encode())
+        rep = s.recv(2).decode() # Le serveur a bien recu la description
+        #print("TAILLE BIEN RECU ")
+        s.sendall(seq)
+
+
     
 def lecture_fasta_loc(adresse) :
     "Cette fonction permet de recuperer une sequence et sa description dans un fichier place dans le repertoire courant grace a son nom donne en argument (entre guillemets, sans oublier l'extension)."
-    sequence=""
-    fasta=open(adresse,"r") # Permet d'ouvrir un fichier existant pour lire les informations qu'il contient.
-    ligne=fasta.readline() # Affecte a la variable ligne la premiere ligne de "fasta" sous forme de chaine de caratere.
-    while ligne[0] != ">": # Permet de recuperer la description de la sequence qui toujours est precedee de ">" au format fasta.
-        ligne=fasta.readline()
-    description=ligne[1:].strip()
-    while ligne != "": # Permet de recuperer la sequence et de s'arreter lorque la lecture a atteint la findu fichier.
-        ligne=fasta.readline().strip()
-        sequence+=ligne
-    fasta.close() # Permet de refermer le fichier "fasta" ouvert au debut de la fonction. 
+    try:
+        sequence=""
+        fasta=open(adresse,"r") # Permet d'ouvrir un fichier existant pour lire les informations qu'il contient.
+        ligne=fasta.readline() # Affecte a la variable ligne la premiere ligne de "fasta" sous forme de chaine de caratere.
+        print(ligne)
+        while ligne[0] != ">": # Permet de recuperer la description de la sequence qui toujours est precedee de ">" au format fasta.
+            ligne=fasta.readline()
+        description=ligne[1:].strip()
+        while ligne != "": # Permet de recuperer la sequence et de s'arreter lorque la lecture a atteint la findu fichier.
+            ligne=fasta.readline().strip()
+            sequence+=ligne
+        fasta.close() # Permet de refermer le fichier "fasta" ouvert au debut de la fonction. 
+    except FileNotFoundError : # Cette erreur remonte si le fichier dont l'adresse est donnee en entree n'existe pas dans l'emplacement du module. 
+        print("\n----------------\nAttention :\n\nLe fichier est introuvable verifiez qu'il n'y a pas de fautes de frappe.\n")
+        print("Attention : Relance du programme\n---------------\n")
+        description,sequence="entree",""
     return(description,sequence)
 
 
@@ -129,8 +158,8 @@ while 1:
         
     elif data.split(":")[0]=="creation dossier":
         des=data.split(":")[1]
-        creation_repertoire(des)
-        s.sendall("OK".encode())
+        creation_repertoire(des,s)
+ #       s.sendall("OK".encode())
         continue
     
     elif data=="nouvelle analyse":
@@ -157,8 +186,6 @@ while 1:
         file_name = msg
         description,seq = lecture_fasta_loc(file_name)
         envoie_fasta(description,seq)
-    
-        
 
     else:        
     # envoi puis reception de la reponse
@@ -169,7 +196,6 @@ while 1:
 s.close()
 print("fin du client TCP")
 
-if __name__=="__main__":
-    creation_fichier("Titoun_et_Lou")
+#if __name__=="__main__":
 
 

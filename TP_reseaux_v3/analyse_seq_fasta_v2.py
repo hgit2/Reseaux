@@ -39,21 +39,7 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
     con.sendall(nom)
     rep=con.recv(255).decode()
 #---------------------------------------------#
-    
-    # nom_fichier="Analyse_seq_nucl"+des           
-    # fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
-    # numero_fichier=0
-    # while fichier_existe: # Tant que le fichier "nom_fichier.py" existe le nom change.
-    #     try: 
-    #         sortie=open(nom_fichier+"(%i).py" % numero_fichier,'r') # Test si le fichier "nom.py" existe.
-    #     except FileNotFoundError: 
-    #         fichier_existe=False # Le fichier n'existe pas on peut donc le creer sans prendre le risque d'en ecraser un preexistant.
-    #     else:
-    #         sortie.close()
-    #         numero_fichier+=1
-    #         nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier) # Si le fichier "nom_fichier.py" existe on change de nom pour ne pas l'ecraser.
-    # sortie=open(nom_fichier+"(%i).py" % numero_fichier,'a')
-    
+
     CG,pourcentCpG=an.contenu_C_et_G_et_nb_CpG(seq, con, comp=compo) # Recuperation du pourcentage de C+G dans la sequence.
     pourcentCpG=pourcentCpG[0]/len(seq)*100 # Recuperation  de nombre de "CG" dans la sequence.
     num_fenetre=[]
@@ -61,7 +47,6 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
     resultats="\n sequence entiere\t%.3f" % CG[0] + "\t%.3f" % pourcentCpG # Puis des resultats correspondants.
     
     for ele in keys:
-        #sortie.write("\t"+str(ele))
         fichier+="\t%s"%(ele)
         resultats+="\t"+str(compo[str(ele)])
     resultats=resultats.replace(".",",")
@@ -134,7 +119,15 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1,plot_dispo=-1):
         #     plt.show()
     else:
         con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'annalyse sur la sequence entiere a pu etre effectuee.\nLes analyses par fenetre requierent une sequence de longueur minimum 200 nucleotides.\n---------------\n".encode())
-        sortie.close()
+        con.recv(255).decode()
+        #-------Envoie du fichier au client-----------#
+        fichier=fichier.encode()
+        taille=str(len(fichier))
+        con.sendall(taille.encode())
+        rep=con.recv(255).decode()
+        if rep=="OK":
+            con.sendall(fichier)
+        #---------------------------------------------#
 
         
 
@@ -159,21 +152,6 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
     rep=con.recv(255).decode()
     print("rep : %s"%rep)
 #---------------------------------------------#
-
-    
-#    nom_fichier="Annalyse_seq_prot"+des
-#    fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
-#    numero_fichier=0
-#    while fichier_existe: # Tant que le fichier "nom_fichier.png" existe le nom change.
-#        try: 
-#            sortie=open(nom_fichier+"(%i).py" % numero_fichier,'r') # Test si le fichier "nom_fichier.py" existe.
-#        except FileNotFoundError: 
-#            fichier_existe=False
-#        else:
-#            sortie.close()
-#            numero_fichier+=1
-#            nom_fichier=nom_fichier.replace("(%i)" % (numero_fichier-1),"(%i)" % numero_fichier)
-#    sortie=open(nom_fichier+"(%i).py" % numero_fichier,'a') # Ouverture du fichier resultat.
 
     nb_aa_hydrophobe,aa_charges,charge=ap.nb_residus_hydrophobes_et_residus_charges_et_chage_net(seq,compo) # Recuperation les resultats de l'etude de la sequence entiere.
     num_fenetre=[]
@@ -209,8 +187,6 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
         con.sendall(fichier)
 #---------------------------------------------#
 
-    
-    
 #        if plot_dispo: # Seulement si le module matplotlib est installe sur le poste de traville utilise.
 #            plt.subplot(212)
 #            plt.title("Hydrophobicite moyennes de chaque fenetre glissante de 9 acides amines de la sequence")
@@ -239,9 +215,16 @@ def resultat_prot(des,seq,compo,keys,con, plot_dispo=-1): # Permet d'obtenir les
 #            plt.savefig(nom_fichier+"(%i).png" % numero_fichier,format='png')
 #            plt.show()
     else:
-#        con.sendall("len(seq)<=9".encode())
         con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'analyse sur la sequence entiere a pu etre effectuee.\nLes annalyses par fenetre requierent une sequence de longueur minimum 9 acides amines.\n---------------\n".encode())
-        #sortie.close()
+        con.recv(255).decode()
+        #-------Envoie du fichier au client-----------#
+        fichier=fichier.encode()
+        taille=str(len(fichier))
+        con.sendall(taille.encode())
+        rep=con.recv(255).decode()
+        if rep=="OK":
+            con.sendall(fichier)
+        #---------------------------------------------#
 
 
         
@@ -251,7 +234,10 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
     print("dans resultat_analyse_seq")
     reponse="Initialisation" # Condition utile pour commencer l'etude d'une nouvelle fonction.
     type_seq=""
-    premiere_analyse=True # variable servant a ne pas refaire l'annalyse d'une sequence deja effectuee. 
+ #   recep=con.recv(255).decode()
+ #   con.sendall('OK'.encode())
+ #   print(recep)
+    premiere_analyse=True # variable servant a ne pas refaire l'annalyse d'une sequence deja effectuee.
     while reponse!="4":
         print("while")
         keys=[]
@@ -268,20 +254,11 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
             des=des.replace("/","")
             des=des.replace("|","_")
             print("des=", des)
-            #con.sendall("Recupération réussie. \n".encode())
-#            if type_seq=="": # Cette condition mene a l'arret du programme.
-#                reponse="4"
-#                continue # Permet de passer au tour de boucle while suivant, or reponse="4" donc le programme s'arrete.
-#            #print("ecriture d'un fichier")
-            
             con.sendall(("creation dossier:%s"%des).encode())
-            con.recv(255).decode()
-##            try:
-##                os.mkdir("Analyse_"+des) # Permet de tester si le dossier '"Analyse_"+des' existe.
-##            except FileExistsError:
-##                premiere_analyse=False # Si le dossier existe deja alors l'analyse de la sequence entree existe deja, on ne souhaite pas la refaire inutilement.
-##                print(" \nL'analyse de cette sequence a deja ete effectuee, vous pouvez \napprofondir cette analyse ou effectuer une annalyse sur une nouvelle sequence. \n")
-##            os.chdir("./Analyse_"+des) # Si le dossier existe deja il n'est pas cree et on rentre simplement dedans, sinon il a deja ete creer dans le 'try' et donc on rentre dedans.
+            premiere_analyse=con.recv(255).decode()
+            premiere_analyse=premiere_analyse=="True"
+            print("premiere analyse :%s, type :%s" %(str(premiere_analyse),str(type(premiere_analyse))))
+            con.sendall("OK".encode())
             sequence=seq # Permet de garder en memoire la sequence de reference de chaque analyse dans la variable 'seq'.
             description=""
         elif type_seq!="":
@@ -376,7 +353,10 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 continue
             
             print("ask at the end")
-            con.sendall((" \nL analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode()))
+            if premiere_analyse:
+                con.sendall((" \nL analyse de votre sequence a ete effectuee avec succes. \n \nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode()))
+            else:
+                con.sendall("\nPour relancer le programme sur une nouvelle sequence tapez 1\nPour faire la meme etude pour une sequence de meme composition tapez 2,\nPour faire la meme etude sur une sequence aleatoire tapez 3,\nPour arreter le programme tapez 4 :\n ".encode())
             reponse=con.recv(1024).decode()
             print("reponse at the end : ", reponse)
             print("reponse ", reponse)

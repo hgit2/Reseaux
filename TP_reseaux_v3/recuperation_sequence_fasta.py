@@ -34,24 +34,24 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
             type_seq="nucl"
 
         if "." in adresse: # On identifie adresse comme etant un nom de fichier
-            #con.sendall("TEST3\n".encode()) # Si dans l'adresse il y a point 
-            try:
-                print("lire_fasta HERE")
-                #description,sequence="a", "b"
-                description = con.recv(1024).decode() # Reception du nom du fichier 
-                con.sendall("OK".encode())
+            #try:
+            
+            print("lire_fasta HERE")
+            description = con.recv(1024).decode() # Reception du nom du fichier 
+            con.sendall("OK".encode())
+            if description!="entree":
                 print("description du fichier", description)
-
                 size=con.recv(1024).decode()
                 print("size of sequence to analyse =%s"%size)
                 con.sendall("OK".encode())
                 sequence = con.recv(int(size)).decode()
-
                 print("Type de Seq ", type_seq)
+            else:
+                description,sequence,type_seq=entree(con, addr)
 
-            except FileNotFoundError : # Cette erreur remonte si le fichier dont l'adresse est donnee en entree n'existe pas dans l'emplacement du module. 
-                con.sendall("\n----------------\nAttention :\n\nLe fichier est introuvable verifiez qu'il n'y a pas de fautes de frappe.\nAttention : Relance du programme\n---------------\n".encode())
-                description,sequence,type_seq=entree(con, addr) # Permet de redemander les entree a l'utilisateur.
+##            except FileNotFoundError : # Cette erreur remonte si le fichier dont l'adresse est donnee en entree n'existe pas dans l'emplacement du module. 
+##                con.sendall("\n----------------\nAttention :\n\nLe fichier est introuvable verifiez qu'il n'y a pas de fautes de frappe.\nAttention : Relance du programme\n---------------\n".encode())
+##                description,sequence,type_seq=entree(con, addr) # Permet de redemander les entree a l'utilisateur.
         else : # Si adresse ne contient pas de "." c'est qu'il s'agit d'un identifiant et non d'un nom de fichier
             try:
                 print("lire fasta web")

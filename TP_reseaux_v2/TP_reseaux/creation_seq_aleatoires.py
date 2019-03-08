@@ -39,5 +39,5 @@ def seq_aleatoire(seq,compo=-1): # Cree une sequence aleatoire de meme longeur e
     
 def seq_meme_compo(seq): # Cree une sequence de meme composition et donc de meme longueur que la sequence donnee en argument.
     "Cette fonction permet de cree une sequence de meme composition et donc de meme longueur que la sequence donnee en argument (nucleotidique ou proteique, sous forme de chaine de catacteres)."
-    return (''.join(rdm.sample(seq,len(seq)))) # Methode permettant de "melanger" les carartere d'une chaine de caractere preexistante pour en creer une nouvelle.
+    return (''.join(rdm.sample(seq,len(seq)))) # Methode permettant de "melanger" les caractere d'une chaine de caractere preexistante pour en creer une nouvelle.
 
