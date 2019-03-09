@@ -57,7 +57,7 @@ def ecriture_adn(s) :
     s.sendall("OK".encode())
     sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
     message=s.recv(1024).decode()
-    if message.split('\n')[1] == "Attention : Execution incomplete du programme.":
+    if len(message.split('\n'))>1: #message.split('\n')[1] == "Attention : Execution incomplete du programme.":
         print(message)
         s.sendall("OK".encode())
         size=s.recv(1024).decode()
@@ -80,7 +80,7 @@ def ecriture_proteine(s) :
     s.sendall("OK".encode())
     sortie=open(nom_fichier+"(%i).txt" % numero_fichier,'a') # Ouverture du fichier resultat.
     message=s.recv(1024).decode()
-    if message.split('\n')[1] == "Attention : Execution incomplete du programme.":
+    if len(message.split('\n'))>1: #message.split('\n')[1] == "Attention : Execution incomplete du programme.":
         print(message)
         s.sendall("OK".encode())
         size=s.recv(1024).decode()
