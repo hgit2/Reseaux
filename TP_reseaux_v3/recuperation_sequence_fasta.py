@@ -55,7 +55,8 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
         else : # Si adresse ne contient pas de "." c'est qu'il s'agit d'un identifiant et non d'un nom de fichier
             try:
                 print("lire fasta web")
-                description,sequence=lf.lire_fasta_web(adresse,type_seq)
+                description,sequence=lf.lire_fasta_web(adresse,type_seq,con)
+                print("sortie de lire fasta web")
             except urllib.error.HTTPError : # Si le lien internet n'existe pas.
                 con.sendall("\n----------------\nAttention : Le lien est introuvable\nVerifiez qu'il n'y a pas de faute de frappe\nou que vous n'avez pas oublie l'extention du fichier.\nSinon verifiez que l'identifiant correspond bien a une sequence du type : "+ type_seq +"eique.\nVeuillez modifiez vos entrees en consequence. \nAttention : Relance du programme\n---------------\n".encode())
                 description,sequence,type_seq=entree(con, addr) 
@@ -68,6 +69,9 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
             else:
                 if description=="La sequence n'est pas referencee.": # Le lien internet a mene a une page informant que la sequence demandee n'est pas referencee.
                     con.sendall("\n----------------\nAttention : La sequence n'est pas referencee.\nVerifiez qu'il n'y a pas de faute de frappe dans le nom de la sequence.\nSinon verifiez que l'identifiant correspond bien a une sequence du type : "+ type_seq + "eique.\nVeuillez modifiez vos entrees en consequence. \nAttention : Relance du programme\n---------------\n".encode())
+                    description,sequence,type_seq=entree(con, addr)
+                if description=="error": # si il y a eu des erreurs dans lire_fasta_web
+                    print("error")
                     description,sequence,type_seq=entree(con, addr)
         return(description,sequence,type_seq)
 
