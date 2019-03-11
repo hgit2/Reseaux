@@ -130,7 +130,7 @@ def lecture_fasta_loc(adresse) :
             sequence+=ligne
         fasta.close() # Permet de refermer le fichier "fasta" ouvert au debut de la fonction. 
     except FileNotFoundError : # Cette erreur remonte si le fichier dont l'adresse est donnee en entree n'existe pas dans l'emplacement du module. 
-        print("\n----------------\nAttention :\n\nLe fichier est introuvable verifiez qu'il n'y a pas de fautes de frappe.\n")
+        print("\n----------------\nAttention :\n\nLe fichier est introuvable. Verifiez qu'il n'y a pas de fautes de frappe.\n")
         print("Attention : Relance du programme\n---------------\n")
         description,sequence="entree",""
     return(description,sequence)
@@ -141,12 +141,21 @@ def lecture_fasta_loc(adresse) :
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("127.0.0.1",int(sys.argv[1])))
 
+print("Pour fermer cette session, veuillez écrire exit()\n")
 # Créer un argument pour l'adresse ip ?
-print("Connection on {}".format(sys.argv[1]))
+print("Connection on {}\n".format(sys.argv[1]))
 
 while 1:  
     data = s.recv(1024).decode()
-    if data=="resultat_prot":
+    sdata=data.split("__") # permet de parser data
+    msg="" # initialisation du message qui sera envoyé par le client
+    
+    if sdata[0]=="ERROR":
+        # gestion des erreurs
+        print(sdata[1])
+        msg="OK"
+        
+    elif data=="resultat_prot":
         s.sendall("OK".encode())
         print("Analyse en cours...\n")
         ecriture_proteine(s)
@@ -170,27 +179,31 @@ while 1:
     else :
         #print('if not resultats_prot the variable data is  :  ' ,data) # on affiche la reponse
         print(data)
-        
-    msg = input('>> ')
     
-    # test pour arreter le client python proprement
-    if msg=="exit()": # si on initialise pas msg avec raw_input : comme on utilise NC et pas telnet sur les machines BIM il faut mettre if msg=="\n" pour que ca fonctionne 
-        # mais la comme on initialise raw_input c'est bon puisque raw_input renvoi une chaine vide quand on tape entree
-        break
-    elif msg=="":
-        s.sendall("WARNING : empty message".encode())    
+    if msg=="OK":
+        # alors on a traité une erreur
+        s.sendall(msg.encode())
+        print("OK envoye")
+    else:
+        msg = input('>> ')
     
-    elif "." in msg:
-        print("Traitement d'une séquence fasta en locale...")
-        s.sendall(msg.encode())
-        file_name = msg
-        description,seq = lecture_fasta_loc(file_name)
-        envoie_fasta(description,seq)
-
-    else:        
-    # envoi puis reception de la reponse
-        s.sendall(msg.encode())
-    print("after sendall")
+        # test pour arreter le client python proprement
+        if msg=="exit()": # si on initialise pas msg avec raw_input : comme on utilise NC et pas telnet sur les machines BIM il faut mettre if msg=="\n" pour que ca fonctionne 
+            # mais la comme on initialise raw_input c'est bon puisque raw_input renvoi une chaine vide quand on tape entree
+            break
+        elif msg=="":
+            s.sendall("WARNING : empty message".encode())
+            
+        elif "." in msg:
+            print("Traitement d'une séquence fasta en locale...")
+            s.sendall(msg.encode())
+            file_name = msg
+            description,seq = lecture_fasta_loc(file_name)
+            envoie_fasta(description,seq)
+        else:        
+        # envoi puis reception de la reponse
+            s.sendall(msg.encode())
+            print("after sendall")
 
 # fermeture de la connexion
 s.close()
