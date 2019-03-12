@@ -18,6 +18,7 @@ global plot_dispo
 plot_dispo=False # à gérer PLUS TARD
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
+
 def creation_repertoire(des,s):
     premiere_analyse=True
     try:
@@ -137,65 +138,60 @@ def lecture_fasta_loc(adresse) :
 
 
 
-#creation de la socket puis connexion
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("127.0.0.1",int(sys.argv[1])))
 
-# Créer un argument pour l'adresse ip ?
-print("Connection on {}".format(sys.argv[1]))
-
-while 1:  
-    data = s.recv(1024).decode()
-    if data=="resultat_prot":
-        s.sendall("OK".encode())
-        print("Analyse en cours...\n")
-        ecriture_proteine(s)
-
-    elif data=="resultat_adn":
-        s.sendall("OK".encode())
-        print("Analyse en cours...\n")
-        ecriture_adn(s)
+def Client():
+    #creation de la socket puis connexion
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(("127.0.0.1",int(sys.argv[1]))) # Créer un argument pour l'adresse ip ?
+    print("Connection on {}".format(sys.argv[1]))
+    while 1:  
+        data = s.recv(1024).decode()
+        if data=="resultat_prot":
+            s.sendall("OK".encode())
+            print("Analyse en cours...\n")
+            ecriture_proteine(s)
+        elif data=="resultat_adn":
+            s.sendall("OK".encode())
+            print("Analyse en cours...\n")
+            ecriture_adn(s)
+        elif data.split(":")[0]=="creation dossier":
+            des=data.split(":")[1]
+            creation_repertoire(des,s)
+            continue
+        elif data=="nouvelle analyse":
+            os.chdir("./..")
+            s.sendall("OK".encode())
+            continue
+        else :
+            print(data)
+        msg = input('>> ')
         
-    elif data.split(":")[0]=="creation dossier":
-        des=data.split(":")[1]
-        creation_repertoire(des,s)
- #       s.sendall("OK".encode())
-        continue
-    
-    elif data=="nouvelle analyse":
-        os.chdir("./..")
-        s.sendall("OK".encode())
-        continue
-    
-    else :
-        #print('if not resultats_prot the variable data is  :  ' ,data) # on affiche la reponse
-        print(data)
-        
-    msg = input('>> ')
-    
-    # test pour arreter le client python proprement
-    if msg=="exit()": # si on initialise pas msg avec raw_input : comme on utilise NC et pas telnet sur les machines BIM il faut mettre if msg=="\n" pour que ca fonctionne 
-        # mais la comme on initialise raw_input c'est bon puisque raw_input renvoi une chaine vide quand on tape entree
-        break
-    elif msg=="":
-        s.sendall("WARNING : empty message".encode())    
-    
-    elif "." in msg:
-        print("Traitement d'une séquence fasta en locale...")
-        s.sendall(msg.encode())
-        file_name = msg
-        description,seq = lecture_fasta_loc(file_name)
-        envoie_fasta(description,seq)
+        # test pour arreter le client python proprement
+        if msg=="exit()": # si on initialise pas msg avec raw_input : comme on utilise NC et pas telnet sur les machines BIM il faut mettre if msg=="\n" pour que ca fonctionne 
+            # mais la comme on initialise raw_input c'est bon puisque raw_input renvoi une chaine vide quand on tape entree
+            break
+        elif msg=="":
+            s.sendall("WARNING : empty message".encode())    
+        elif "." in msg:
+            print("Traitement d'une séquence fasta en locale...")
+            s.sendall(msg.encode())
+            file_name = msg
+            description,seq = lecture_fasta_loc(file_name)
+            envoie_fasta(description,seq)
+        else:        
+        # envoi puis reception de la reponse
+            s.sendall(msg.encode())
+        print("after sendall")
+    # fermeture de la connexion
+    s.close()
+    print("fin du client TCP")
 
-    else:        
-    # envoi puis reception de la reponse
-        s.sendall(msg.encode())
-    print("after sendall")
 
-# fermeture de la connexion
-s.close()
-print("fin du client TCP")
 
-#if __name__=="__main__":
 
+if __name__=="__main__":
+    if len(sys.argv)<2:
+        print("usage : %s <port>" % (sys.argv[0],))
+        sys.exit(-1)
+    Client()
 
