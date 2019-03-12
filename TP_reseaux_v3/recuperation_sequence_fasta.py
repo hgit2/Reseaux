@@ -53,22 +53,20 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
 ##                con.sendall("\n----------------\nAttention :\n\nLe fichier est introuvable verifiez qu'il n'y a pas de fautes de frappe.\nAttention : Relance du programme\n---------------\n".encode())
 ##                description,sequence,type_seq=entree(con, addr) # Permet de redemander les entree a l'utilisateur.
         else : # Si adresse ne contient pas de "." c'est qu'il s'agit d'un identifiant et non d'un nom de fichier
-            try:
-                print("lire fasta web")
-                description,sequence=lf.lire_fasta_web(adresse,type_seq)
-            except urllib.error.HTTPError : # Si le lien internet n'existe pas.
-                con.sendall("\n----------------\nAttention : Le lien est introuvable\nVerifiez qu'il n'y a pas de faute de frappe\nou que vous n'avez pas oublie l'extention du fichier.\nSinon verifiez que l'identifiant correspond bien a une sequence du type : "+ type_seq +"eique.\nVeuillez modifiez vos entrees en consequence. \nAttention : Relance du programme\n---------------\n".encode())
-                description,sequence,type_seq=entree(con, addr) 
-            except urllib.error.URLError : # Si la connexion internet ne fonctionne pas.
-                con.sendall("\n----------------\nAttention : Impossible d'acceder a la base de donnees en ligne.\nVerifiez que vous avez bien une connnection internet active sur ce poste.\nAttention : Relance du programme\n---------------\n".encode())
+#            try:
+            print("lire fasta web")
+            description,sequence=lf.lire_fasta_web(adresse,type_seq,con)
+            print("sortie de lire fasta web")
+            if description=="La sequence n'est pas referencee.": # Le lien internet a mene a une page informant que la sequence demandee n'est pas referencee.
+                print("seq non referencee")
+                con.sendall("ERROR__\n----------------\nAttention : La sequence n'est pas referencee.\nVerifiez qu'il n'y a pas de faute de frappe dans le nom de la sequence.\nSinon verifiez que l'identifiant correspond bien a une sequence du type : {}eique.\nVeuillez modifiez vos entrees en consequence. \nAttention : Relance du programme\n---------------\n".format(type_seq).encode())
+                ok=con.recv(1024).decode() # réception de l'accusé réception du client
+                print(ok)
                 description,sequence,type_seq=entree(con, addr)
-            except UnicodeEncodeError : # Si l'identifiant contient des caracteres speciaux non reconnus (accents, guillemets...). 
-                con.sendall("\n----------------\nAttention : L'identifiant entre est incorecte\nVerifiez qu'il n'y a pas de faute de frappe,d'espaces\nou que vous n'avez pas oublie l'extention du fichier\nVeuillez modifiez vos entrees en consequence.\nAttention : Relance du programme\n---------------\n".encode())
+            if description=="error": # si il y a eu des erreurs dans lire_fasta_web
+                print("error")
                 description,sequence,type_seq=entree(con, addr)
-            else:
-                if description=="La sequence n'est pas referencee.": # Le lien internet a mene a une page informant que la sequence demandee n'est pas referencee.
-                    con.sendall("\n----------------\nAttention : La sequence n'est pas referencee.\nVerifiez qu'il n'y a pas de faute de frappe dans le nom de la sequence.\nSinon verifiez que l'identifiant correspond bien a une sequence du type : "+ type_seq + "eique.\nVeuillez modifiez vos entrees en consequence. \nAttention : Relance du programme\n---------------\n".encode())
-                    description,sequence,type_seq=entree(con, addr)
+        print("about to leave entree")
         return(description,sequence,type_seq)
 
     con.sendall("\n---------------\nArret du programme\nVous etes deconnecte du serveur\n---------------\n".encode())
