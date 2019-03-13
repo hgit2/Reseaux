@@ -13,9 +13,21 @@ import creation_seq_aleatoires as csa
 #import os
 import socket
 
+##try:
+##    import matplotlib.pyplot as plt # Permet de tester la presence du module matplotlib sur le poste.
+##except ImportError:
+##    print("---------------\nAttention : Votre poste de travail n'est pas equipe du module matplotlib,\npar consequent le programme ne pourra pas generer de resultats graphiques\nseuls les tableaux de resultats seront generes.\n---------------")
+##    plt_dispo=False # (Variable globale) Si le module matplotlib n'est pas insatlle sur le poste la variable plt_dispo prend la valeur False et les graphiques des resultats ne seront pas traces.
+##else:
+##    plt.rcdefaults() # Permet de reinitialiser les parametres par defaut de matplotlib au cas ou ils aient ete modifier
+##    import numpy as np
+##    plt_dispo=True # (Variable globale) Si le module matplotlib est insatlle sur le poste la variable plt_dispo prend la valeur True.
+##
+
+
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-global plot_dispo 
-plot_dispo=False # à gérer PLUS TARD
+global plt_dispo 
+plt_dispo=False # à gérer PLUS TARD
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 

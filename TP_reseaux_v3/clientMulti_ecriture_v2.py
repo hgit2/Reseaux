@@ -147,7 +147,7 @@ def Client():
     # Créer un argument pour l'adresse ip ?
     print("Connection on {}\n".format(sys.argv[1]))
 
-    while 1:  
+    while 1:
         data = s.recv(1024).decode()
         sdata=data.split("__") # permet de parser data
         msg="" # initialisation du message qui sera envoyé par le client
@@ -205,9 +205,9 @@ def Client():
             # envoi puis reception de la reponse
                 s.sendall(msg.encode())
             print("after sendall")
-        # fermeture de la connexion
-        s.close()
-        print("fin du client TCP")
+    # fermeture de la connexion
+    s.close()
+    print("fin du client TCP")
 
 
 
@@ -217,5 +217,7 @@ if __name__=="__main__":
         print("usage : %s <port>" % (sys.argv[0],))
         sys.exit(-1)
     Client()
+
+    
 
 
