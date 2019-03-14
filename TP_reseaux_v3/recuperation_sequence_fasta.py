@@ -19,6 +19,7 @@ def entree(con, addr): # Cette fonction recupere une sequence proteique ou nucle
         con.sendall("\n----------------\nAttention : Votre choix ne correspond a aucune des options proposees. \nAttention : Relance du programme\n---------------\n\nSi vous souhaitez etudier une sequence proteique tapez 1.\nSi vous souhaitez etudier une sequence nucleique tapez 2.\nPour arreter le programme tapez 4.\nTapez ici votre choix puis appuyez sur 'entree' :\n".encode())
         type_seq=con.recv(1024).decode()
     while type_seq=="1" or type_seq=="2":
+        print("JE DEMANDE LE NOM DU FICHIER !!!")
         con.sendall(" \nSi votre sequence se trouve dans un fichier fasta tapez son nom avec extention, sans guillemet.\nSi votre sequence se trouve dans une fiche fasta en ligne tapez son identifiant sans guillemet.\nSinon tapez 3.\nTapez ici votre choix puis appuyez sur 'entree' :\n".encode())
         adresse=con.recv(1024).decode()
         if adresse=="3" :
