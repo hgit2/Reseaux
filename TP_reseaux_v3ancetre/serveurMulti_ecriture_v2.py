@@ -56,7 +56,8 @@ class Serveur:
         # creation de la connection pour le serveur, protocol TCP, domaine internet
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
         # recuperation du numero de port via la ligne de commande
-        sock.bind(("127.0.0.1",int(sys.argv[1])))
+        #sock.bind(("127.0.0.1",int(sys.argv[1])))
+        sock.bind(("134.214.159.255",int(sys.argv[1])))
         sock.listen(1)
         print("\nListening\n")
         while stopBoolServ:
