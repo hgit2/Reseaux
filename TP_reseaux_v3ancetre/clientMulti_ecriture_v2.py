@@ -139,7 +139,7 @@ def lecture_fasta_loc(adresse) :
 def Client():
     #creation de la socket puis connexion
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(("134.214.159.255 ",int(sys.argv[1])))
+    s.connect(("127.0.0.1 ",int(sys.argv[1])))
     
     print("Pour fermer cette session, veuillez écrire exit()\n")
     # Créer un argument pour l'adresse ip ?
