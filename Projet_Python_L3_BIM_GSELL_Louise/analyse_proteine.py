@@ -1,8 +1,7 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-#                                                                     Projet réseaux 4BIM
+#                                                                     Projet Python L3 BIM 2017
 #                                                                  Analyse de sequence proteique
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -83,7 +82,7 @@ def nb_residus_hydrophobes_et_residus_charges_et_chage_net(seq,compo=-1): # Fonc
     nb_aa_charges=nb_aa_charges/len(seq)*100
     return(nb_aa_hydrophobe,nb_aa_charges,charge)
 
-def hydrophobicite_moyenne(seq,con,taille=-1, compo=-1): # Permet de calculer l'hydrophobicite moyenne d'une sequence ou d'une fenetre glissate de taille donnee.
+def hydrophobicite_moyenne(seq,taille=-1,compo=-1): # Permet de calculer l'hydrophobicite moyenne d'une sequence ou d'une fenetre glissate de taille donnee.
     "Cette fonction calcule l'hydrophobicite moyenne d'une sequence donnee en premier argument (par defaut) ou dans toutes les fenetres glissante de longueurs donnees en deuxieme argument."
     if taille==-1:
         taille=len(seq)
@@ -107,7 +106,49 @@ def hydrophobicite_moyenne(seq,con,taille=-1, compo=-1): # Permet de calculer l'
             hydrophobicite=0
         return(hydrophobicites)
     else:
-        con.sendall("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+".\n---------------\n".encode())
-        con.shutdown(1)
+        print("---------------\nAttention : Arret du programme.\n\nCe programme ne fonctionne que pour des sequence de longueur minimum "+str(taille)+".\n---------------")
         return('')
+    
+
+#Main:
+
+if __name__=="__main__":
+    print(" -> GSELL Louise")
+    print(" -> Projet L3 BIM 2017, Module : Analyse de sequence proteique")
+    print("\n")
+    print(" -> exemples d'applications des fonctions de ce module\n")
+
+    # Sequence proteique teste :
+    
+    seq='MPANQPPLYLTFLLLILLYLIITLYVWTILTINHKTAVRYAALYQRSCSRWGFDQSL'
+    print("seq="+seq)
+    print("\n")
+
+    # Pour tester la fonction "composition": 
+    
+    compo=composition(seq)
+    print("composition(seq)")
+    print(compo)
+    print("\n")
+
+    # Pour tester la fonction "nb_residus_hydrophobes":
+    
+    aa_hydro=nb_residus_hydrophobes(seq)
+    print("nb_residus_hydrophobes(seq)")
+    print(aa_hydro)
+    print("\n")
+
+    # Pour tester la fonction "residus_charges_et_charge_net":
+    
+    aa_charges,charge_net=residus_charges_et_charge_net(seq)
+    print("residus_charges_et_charge_net(seq)")
+    print(aa_charges,charge_net)
+    print("\n")
+
+    # Pour testet la fonction "hydrophobicite_moyenne":
+    
+    hydro=hydrophobicite_moyenne(seq)
+    print("hydrophobicite_moyenne(seq)")
+    print(hydro[0])
+
     

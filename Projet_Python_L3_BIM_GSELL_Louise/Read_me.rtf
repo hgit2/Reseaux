@@ -1,0 +1,79 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf820
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28160\viewh15740\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\qc\partightenfactor0
+
+\f0\b\fs36 \cf0 \ul \ulc0 Read me\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\i\fs28 \cf0 \ulnone -> Projet Python L3 BIM, GSELL Louise
+\i0\fs36 \ul \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\fs32 \cf0 Fonctionnement du script :
+\b0\fs24 \ulnone \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\qj\partightenfactor0
+
+\fs28 \cf0 Ce script est compos\'e9 de sept modules (fichiers \'ab\'a0.py\'a0\'bb) : 
+\i\b recuperation_sequence_fasta
+\i0\b0 , 
+\i\b lire_fasta
+\i0\b0 , 
+\i\b anayle_ADN
+\i0\b0 , 
+\i\b analyse_proteine
+\i0\b0 , 
+\i\b creation_seq_aleatoires
+\i0\b0 , 
+\i\b analyse_sequence_fasta
+\i0\b0 , et
+\i\b  module_de_lancement
+\i0\b0 .  \
+Il permet d\'92analyser des s\'e9quences fasta prot\'e9iques ou nucl\'e9iques.\
+Il peut g\'e9rer aussi bien des fichiers fasta stock\'e9s sur la machine que des fiches fasta en ligne. \
+Lors de son fonctionnement, il r\'e9cup\'e8re la s\'e9quence fasta souhait\'e9e et cr\'e9e des fichiers r\'e9sultats tabul\'e9s (fichiers \'ab\'a0.py\'a0\'bb) pouvant \'eatre ouvert en .txt ou avec un tableur comme Excel. Il cr\'e9e \'e9galement dans ce dossier des graphiques (fichiers \'ab\'a0.png\'a0\'bb) si l\'92utilisateur le souhaite, en se basant sur son analyse (\'e0 condition que la machine soit \'e9quip\'e9e du module 
+\i\b matplotlib
+\i0\b0 , dans le cas contraire il ne cr\'e9e que les fichiers tabul\'e9s). Ces donn\'e9es sont cr\'e9\'e9es de mani\'e8re automatique et sont class\'e9es dans un dossier portant comme nom \'ab\'a0Analyse_\'a0\'bb suivit de la description de la s\'e9quence \'e9tudi\'e9e. Ce dossier sera automatiquement export\'e9 dans le r\'e9pertoire courant (celui o\'f9 se trouve le script).\
+Ce script offre la possibilit\'e9 d\'92approfondir l\'92analyse en la r\'e9p\'e9tant sur une ou plusieurs s\'e9quences al\'e9atoires de m\'eame longueur et de m\'eame type que la s\'e9quence de r\'e9f\'e9rence et/ou sur une ou plusieurs s\'e9quences al\'e9atoires de m\'eame composition. Si l\'92utilisateur fait le choix d\'92effectuer un ou plusieurs des approfondissements pr\'e9alablement cit\'e9s, tous les fichiers et graphiques g\'e9n\'e9r\'e9s au cours de ces approfondissements seront class\'e9s dans le m\'eame dossier que la s\'e9quence de r\'e9f\'e9rence. Toutes les pr\'e9cautions n\'e9cessaires sont prises lors de la cr\'e9ation des r\'e9sultats par le script pour ne pas \'e9craser d\'92\'e9ventuels r\'e9sultats pr\'e9existants. \
+Lors de chaque analyse le graphique cr\'e9\'e9 s\'92affiche automatiquement, il n\'92est pas n\'e9cessaire de l\'92enregistrer il se trouve d\'92ores et d\'e9j\'e0 dans le dossier appropri\'e9. Cette fen\'eatre surgissante est simplement l\'e0 pour donner un aper\'e7u des r\'e9sultats \'e9tablis, et ainsi aider l\'92utilisateur \'e0 d\'e9cider s\'92il souhaite approfondir ou non son \'e9tude. L\'92apparition de cette fen\'eatre interrompt le programme, pour continuer il suffit de la fermer.\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\b\fs32 \cf0 \ul Pr\'e9cautions \'e0 prendre :
+\b0\fs28 \ulnone \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\qj\partightenfactor0
+\cf0 Ce programme fonctionne sur les syst\'e8me d\'92exploitations Windows, Linux et OS X.\
+Pour que le script fonctionne il est imp\'e9ratif que les sept modules (
+\i\b recuperation_sequence_fasta
+\i0\b0 , 
+\i\b lire_fasta
+\i0\b0 , 
+\i\b anayle_ADN
+\i0\b0 , 
+\i\b analyse_proteine
+\i0\b0 , 
+\i\b creation_seq_aleatoires
+\i0\b0 , 
+\i\b analyse_sequence_fasta, 
+\i0\b0 et
+\i\b  module_de_lancement)
+\i0\b0  soient regroup\'e9s dans un m\'eame dossier (le r\'e9pertoire courant).\
+Si l\'92\'e9tude porte sur un fichier fasta il doit imp\'e9rativement se trouver dans le m\'eame r\'e9pertoire que l\'92ensemble des modules.\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\b\fs32 \cf0 \ul Pour lancer le script :\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\qj\partightenfactor0
+
+\b0\fs28 \cf0 \ulnone Ouvrir le module 
+\i\b module_de_lancement
+\i0\b0  en choisissant \'ab\'a0ouvrir avec\'a0\'bb, puis \'ab\'a0IDLE (3.6.0)\'a0\'bb. Pour lancer le programme cliquer sur l\'92onglet \'ab\'a0Run\'a0\'bb (du menu IDLE) puis choisir \'ab\'a0Run module\'a0\'bb.\
+Le script d\'e9roulera alors un menu permettant \'e0 l\'92utilisateur de choisir le type de s\'e9quence qu\'92il souhaite \'e9tudier (prot\'e9ique ou nucl\'e9ique) puis dans un deuxi\'e8me temps un nom de fichier ou un identifiant permettant d\'92acc\'e9der \'e0 la s\'e9quence qu\'92il souhaite \'e9tudier. Apr\'e8s quoi l\'92\'e9tude s\'92effectuera automatiquement si les entr\'e9es ont \'e9t\'e9 correctement donn\'e9es. L\'92utilisateur aura ensuite le choix entre quitter le programme, commencer l\'92\'e9tude d\'92une nouvelle s\'e9quence ou approfondir son \'e9tude en cours.}
