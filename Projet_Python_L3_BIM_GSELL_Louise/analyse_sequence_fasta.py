@@ -236,7 +236,7 @@ def resultats_analyse_seq(): # Permet d'optenir les resultats de l'annalyse d'un
                         else:
                             plot_dispo=False
                     else:
-                        plot_dipo=True
+                        plot_dispo=False
                     seq=ap.code3aa1(sequence) # Permet de passer du code d'acide amines 3 lettres au code 1 lettre si besoin (si 'sequence' est nucleotidique ou deja en code 1 lettre rien ne change.)
                     compo=ap.composition(sequence)
                     for key in compo.keys():

@@ -139,7 +139,7 @@ def lecture_fasta_loc(adresse) :
 def Client():
     #creation de la socket puis connexion
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(("127.0.0.1 ",int(sys.argv[1])))
+    s.connect(("127.0.0.1",int(sys.argv[1])))
     
     print("Pour fermer cette session, veuillez écrire exit()\n")
     # Créer un argument pour l'adresse ip ?
@@ -210,8 +210,8 @@ def Client():
     print("fin du client TCP")
 
 if __name__=="__main__":
-	if len(sys.argv)<2:
-		print("usage : %s <port>" % (sys.argv[0],))
-		sys.exit(-1)
-	Client()
+    if len(sys.argv)<2:
+        print("usage : %s <port>" % (sys.argv[0],))
+        sys.exit(-1)
+    Client()
 
