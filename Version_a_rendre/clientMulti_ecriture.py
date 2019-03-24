@@ -223,19 +223,29 @@ def ecriture_adn(s) :
         file=s.recv(int(size)).decode()
         s.sendall("OK".encode())
     else : # Taille du fichier supérieur à 30Kb
-        file = ""
-        nb_file = s.recv(1024).decode()
-        s.sendall("OK".encode())
-        nb_file = int(nb_file)
-        for i in range(0,nb_file-1):
-            file_c = s.recv(30000).decode()
-            file += file_c
+        if int(size)% 30000 !=0 :
+            file = ""
+            nb_file = s.recv(1024).decode()
             s.sendall("OK".encode())
-        last_size = s.recv(1024).decode()
-        s.sendall("OK".encode())
-        last_file = s.recv(int(last_size)).decode()
-        file += last_file
-        s.sendall("OK".encode())
+            nb_file = int(nb_file)
+            for i in range(0,nb_file-1):
+                file_c = s.recv(30000).decode()
+                file += file_c
+                s.sendall("OK".encode())
+            last_size = s.recv(1024).decode()
+            s.sendall("OK".encode())
+            last_file = s.recv(int(last_size)).decode()
+            file += last_file
+            s.sendall("OK".encode())
+        else : # La taille du fichier est un multiple de 30000
+            file = ""
+            nb_file = s.recv(1024).decode()
+            s.sendall("OK".encode())
+            nb_file = int(nb_file)
+            for i in range(0,nb_file):
+                file_c = s.recv(30000).decode()
+                file += file_c
+                s.sendall("OK".encode())
   
     sortie.write(file)  
     sortie.close()
@@ -320,19 +330,29 @@ def ecriture_proteine(s) :
         file=s.recv(int(size)).decode()
         s.sendall("OK".encode())
     else : # Taille du fichier supérieur à 30Kb
-        file = ""
-        nb_file = s.recv(1024).decode()
-        s.sendall("OK".encode())
-        nb_file = int(nb_file)
-        for i in range(0,nb_file-1):
-            file_c = s.recv(30000).decode()
-            file += file_c
+        if int(size)% 30000 !=0 :
+            file = ""
+            nb_file = s.recv(1024).decode()
             s.sendall("OK".encode())
-        last_size = s.recv(1024).decode()
-        s.sendall("OK".encode())
-        last_file = s.recv(int(last_size)).decode()
-        file += last_file
-        s.sendall("OK".encode())
+            nb_file = int(nb_file)
+            for i in range(0,nb_file-1):
+                file_c = s.recv(30000).decode()
+                file += file_c
+                s.sendall("OK".encode())
+            last_size = s.recv(1024).decode()
+            s.sendall("OK".encode())
+            last_file = s.recv(int(last_size)).decode()
+            file += last_file
+            s.sendall("OK".encode())
+        else : # La taille du fichier est un multiple de 30000
+            file = ""
+            nb_file = s.recv(1024).decode()
+            s.sendall("OK".encode())
+            nb_file = int(nb_file)
+            for i in range(0,nb_file):
+                file_c = s.recv(30000).decode()
+                file += file_c
+                s.sendall("OK".encode())
 
     sortie.write(file)  
     sortie.close()
