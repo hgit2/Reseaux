@@ -298,7 +298,7 @@ def analyse_graph_prot(nom_fichier, numero_fichier):
 
 
 def ecriture_proteine(s) :
-     """Cette fonction permet d'écrire les résultats d'une séquence protéique. Les résultats sont envoyés depuis 
+    """Cette fonction permet d'écrire les résultats d'une séquence protéique. Les résultats sont envoyés depuis 
     analyse_sequence_fasta -> resultat_prot(). Tout d'abord le client reçoit le nom de la séquence puis crée le 
     fichier correspondant. Les résultats sont reçus, avec une taille de buffer  adaptée, puis ils sont écrits.
     A la fin de l'écriture le client pourra décider de lancer une l'analyse graphique via analyse_graph(), puis 
@@ -315,8 +315,25 @@ def ecriture_proteine(s) :
         size=s.recv(1024).decode()
     else :
         size=message
-    s.sendall("OK".encode())
-    file=s.recv(int(size)).decode()
+        s.sendall("OK".encode())
+    if int(size) < 30000 :
+        file=s.recv(int(size)).decode()
+        s.sendall("OK".encode())
+    else : # Taille du fichier supérieur à 30Kb
+        file = ""
+        nb_file = s.recv(1024).decode()
+        s.sendall("OK".encode())
+        nb_file = int(nb_file)
+        for i in range(0,nb_file-1):
+            file_c = s.recv(30000).decode()
+            file += file_c
+            s.sendall("OK".encode())
+        last_size = s.recv(1024).decode()
+        s.sendall("OK".encode())
+        last_file = s.recv(int(last_size)).decode()
+        file += last_file
+        s.sendall("OK".encode())
+
     sortie.write(file)  
     sortie.close()
     plot_dispo=analyse_graph(nom_fichier, numero_fichier)

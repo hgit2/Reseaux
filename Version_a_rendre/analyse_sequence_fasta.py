@@ -163,7 +163,25 @@ def resultat_prot(des,seq,compo,keys,con): # Permet d'obtenir les tableaux de re
     con.sendall(taille.encode())
     rep=con.recv(255).decode()
     if rep=="OK":
-        con.sendall(fichier)
+        if int(taille)> 30000: # Si la taille du fichier à envoyer est supérieur à 30kb
+            nb_file = (int(taille) // 30000) +1  # Nombre de fichiers à envoyer
+            con.sendall(str(nb_file).encode()) # Envoie du nombre de fichiers
+            rep=con.recv(255).decode()  # Confirmation de la réception
+            for i in range(0,nb_file-1): # Envoi par paquet de 30kb
+                fichier_c = fichier[i*30000:(i+1)*30000]
+                con.sendall(fichier_c)
+                rep=con.recv(255).decode() # Confirmation de la réception
+            last_file_size = int(taille) - ((int(taille) // 30000)*30000) # Taille du dernier block 
+            last_file_size =  str(last_file_size)
+            con.sendall(last_file_size.encode()) # Envoi de la taille 
+            rep=con.recv(255).decode() # Confirmation de la réception
+            last_file = fichier[((int(taille) // 30000)*30000) : int(taille)] # Envoi du dernier block
+            con.sendall(last_file)
+            rep=con.recv(255).decode()
+
+        else :    
+            con.sendall(fichier)
+            rep=con.recv(255).decode()
 #---------------------------------------------#
 
     else:

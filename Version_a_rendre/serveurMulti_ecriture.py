@@ -36,19 +36,19 @@ def handle_com(con, addr):
     """Cette fonction permet de lancer le module d'analyse analyse_sequence_fasta avec le menu principal."""
 
 
-        print("Process identity %s, %s" %(addr[0],addr[1]))
+    print("Process identity %s, %s" %(addr[0],addr[1]))
+    try:
+        print("Connection information %s at %s, %s\n" %(con, addr[0],addr[1]))
+        while True:
+            asf.resultats_analyse_seq(con, addr)
+    except:
         try:
-            print("Connection information %s at %s, %s\n" %(con, addr[0],addr[1]))
-            while True:
-                asf.resultats_analyse_seq(con, addr)
+            con.shutdown(1)
+            con.close()
+            print("Problem in request ?")
+            print("Finally : Closed socket")
         except:
-            try:
-                con.shutdown(1)
-                con.close()
-                print("Problem in request ?")
-                print("Finally : Closed socket")
-            except:
-                print("The process %s, %s has been stopped by user"%(addr[0],addr[1]))
+            print("The process %s, %s has been stopped by user"%(addr[0],addr[1]))
 
 
 class Serveur:
