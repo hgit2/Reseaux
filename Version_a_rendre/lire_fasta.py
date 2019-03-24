@@ -11,7 +11,10 @@ import urllib.error
 
 
 def lire_fasta_web(adresse,type_seq,con): # Recupere une sequence fasta sur internet grace a son identifiant entre guillemets et au type de la sequence ("prot" ou "nucl").
-    "Cette fonction permet de recuperer une sequence et sa decription dans une fiche fasta en ligne grace a son identifiant donne en premier argument et au type de sequence donne en deuxieme argument ('prot' ou 'nucl')."
+    """Cette fonction permet de recuperer une sequence et sa decription dans une fiche fasta en ligne grace a son identifiant donne en premier
+     argument et au type de sequence donne en deuxieme argument ('prot' ou 'nucl')."""
+
+     
     adresse=adresse.upper()
     if type_seq=="prot":
         url="http://www.uniprot.org/uniprot/"+adresse+".fasta"

@@ -24,6 +24,8 @@ stopBoolServ = True
 
 def signal_handler(signal, frame):
     "Fonction qui permet de traiter les arrets par ctrl+C"
+
+
     print('\n\nYou pressed Ctrl+C\nSERVER CLOSED\n')
     global stopBoolServ
     stopBoolServ = False
@@ -31,6 +33,9 @@ def signal_handler(signal, frame):
 
 
 def handle_com(con, addr):
+    """Cette fonction permet de lancer le module d'analyse analyse_sequence_fasta avec le menu principal."""
+
+
         print("Process identity %s, %s" %(addr[0],addr[1]))
         try:
             print("Connection information %s at %s, %s\n" %(con, addr[0],addr[1]))
@@ -47,6 +52,9 @@ def handle_com(con, addr):
 
 
 class Serveur:
+    """Cette objet gère la connexion d'un serveur. Il reste à l'écoute en attendant la connexion de clients.
+    Dès que celle-ci est établi il fait appel à proced. """
+
     def __init__(self):
         global stopBoolServ 
         stopBoolServ = True
@@ -66,7 +74,10 @@ class Serveur:
         sock.close()
 
 
-    def proced(self,con,addr):#,sock):
+    def proced(self,con,addr):
+        """Cette fonction permet de gérer les connections multiples. Elle permet ainsi la parallélisation de
+        la fonction handle_com()."""
+
         try:
             process = multiprocessing.Process(target=handle_com, args=(con, addr))
             process.daemon = True

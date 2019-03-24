@@ -49,7 +49,7 @@ def creation_repertoire(des,s):
 
 def creation_fichier(nom_fichier) :
     """Cette fonction permet de créer les fichiers textes contenant les résultats. Cette fonction prévient la redondance des fichiers,
-    ainsi chaque le nom de chaque fichier est unique. """
+    ainsi le nom de chaque fichier est unique. """
 
 
     nom_fichier=nom_fichier.replace("\n","")
@@ -70,7 +70,7 @@ def creation_fichier(nom_fichier) :
 
 def analyse_graph(nom_fichier, numero_fichier):
     """ Cette fonction permet de tracer un histogramme représentant la composition d'une séquence nucléique ou protéique,
-    dont l'analyse a déjà été effectuée. Ainsi cette fonction prend en argument le nom du répertoire et clui du fichiers des 
+    dont l'analyse a déjà été effectuée. Ainsi cette fonction prend en argument le nom du répertoire et celui du fichiers des 
     résultats. Cette analyse requiert le module matplotlib.  Si cette librairie est installée, l'utilisateur pourra choisir 
     de lancer ou non ce module graphique. Cette fonction ouvre une fenêtre graphique qui sera complétée par analyse_graph_adn
     ou analyse_graph_prot selon la nature de la séquence.
@@ -119,6 +119,7 @@ def analyse_graph_adn(nom_fichier, numero_fichier):
     pour une séquence d'ADN dont l'anlyse a déjà été réalisée. Cette fonction prend ainsi en argument le nom du répertoire et celui
     du fichier des résultats.  Cette fonction requiert la librairie matplotlib. Les graphiques seront présentés sur la même fenêtre 
     que celle générée par analyse_graph, puis sera enregistré sous le format .png.  """
+
 
     file=open(nom_fichier+"(%i).txt" % numero_fichier,'r') # Ouverture du fichier resultat en mode lecture.
     line=file.readline()[:-1].split("\t")
@@ -199,6 +200,13 @@ def analyse_graph_adn(nom_fichier, numero_fichier):
 
 
 def ecriture_adn(s) :
+    """Cette fonction permet d'écrire les résultats d'une séquence nucléique. Les résultats sont envoyés depuis 
+    analyse_sequence_fasta -> resultat_ADN(). Tout d'abord le client reçoit le nom de la séquence puis crée le 
+    fichier correspondant. Les résultats de taille inférieur à 30Kb sont reçus en une seule fois puis ils sont écrits.
+    Sinon le client reçoit des blocs de résultats, ceux-ci sont concaténés, puis écrits. A la fin de l'écriture le client
+    pourra décider de lancer une l'analyse graphique via analyse_graph() puis via analyse_graph_adn() ."""
+
+
     nom=s.recv(1024).decode()
     nom_fichier, numero_fichier = creation_fichier(nom)
     s.sendall("OK".encode())
@@ -208,15 +216,12 @@ def ecriture_adn(s) :
         print(message)
         s.sendall("OK".encode())
         size=s.recv(1024).decode()
-        print("SIZE", size)
     else :
         size=message
-        print("SIZE", size)
         s.sendall("OK".encode())
     if int(size) < 30000 :
         file=s.recv(int(size)).decode()
         s.sendall("OK".encode())
-        print('RECEIVE FILE ', file)
     else : # Taille du fichier supérieur à 30Kb
         file = ""
         nb_file = s.recv(1024).decode()
@@ -231,17 +236,7 @@ def ecriture_adn(s) :
         last_file = s.recv(int(last_size)).decode()
         file += last_file
         s.sendall("OK".encode())
-        """
-        file1=s.recv(30000).decode()
-        s.sendall("OK".encode())
-        print('RECEIVE FILE ', file1)
-        size2=s.recv(1024).decode()
-        print('SIZE 2 ', size2)
-        s.sendall("OK".encode())
-        file2=s.recv(int(size2)).decode()
-        s.sendall("OK".encode())
-        file = file1 + file2
-        """
+  
     sortie.write(file)  
     sortie.close()
     plot_dispo=analyse_graph(nom_fichier, numero_fichier)
@@ -303,6 +298,12 @@ def analyse_graph_prot(nom_fichier, numero_fichier):
 
 
 def ecriture_proteine(s) :
+     """Cette fonction permet d'écrire les résultats d'une séquence protéique. Les résultats sont envoyés depuis 
+    analyse_sequence_fasta -> resultat_prot(). Tout d'abord le client reçoit le nom de la séquence puis crée le 
+    fichier correspondant. Les résultats sont reçus, avec une taille de buffer  adaptée, puis ils sont écrits.
+    A la fin de l'écriture le client pourra décider de lancer une l'analyse graphique via analyse_graph(), puis 
+    via analyse_graph_prot()."""
+
     nom=s.recv(1024).decode()
     nom_fichier, numero_fichier = creation_fichier(nom)
     s.sendall("OK".encode())
@@ -329,6 +330,8 @@ def ecriture_proteine(s) :
 
 def envoie_fasta(description,seq) :
     "Cette fonction envoie au serveur des données fasta stockées en local."
+
+
     if description=="entree":
         description= description.encode()
         s.sendall(description)
@@ -346,7 +349,10 @@ def envoie_fasta(description,seq) :
 
     
 def lecture_fasta_loc(adresse) :
-    "Cette fonction permet de recuperer une sequence et sa description dans un fichier place dans le repertoire courant grace a son nom donne en argument (entre guillemets, sans oublier l'extension)."
+    """Cette fonction permet de recuperer une sequence et sa description dans un fichier place dans le repertoire courant grace a son nom 
+    donne en argument (entre guillemets, sans oublier l'extension)."""
+
+
     try:
         sequence=""
         fasta=open(adresse,"r") # Permet d'ouvrir un fichier existant pour lire les informations qu'il contient.
@@ -367,6 +373,10 @@ def lecture_fasta_loc(adresse) :
 
 #--------------Mise en reseau-----------------#
 def Client():
+    """Cette objet gère la connexion et la déconnexion d'un client au serveur. Il permet également la coordination 
+    des actions du client et du serveur. """
+
+
     #creation de la socket puis connexion
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(("127.0.0.1",int(sys.argv[1])))
