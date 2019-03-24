@@ -14,7 +14,17 @@ import socket
 
 def resultat_ADN(des,seq,con, compo=-1,keys=-1): 
     # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'annalyse de la sequence ADN.
-    "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet d'effectuer une etude de sequence nucleique. Cette etude consiste en un calcul du pourcentage de C+G et de CpG dans la sequence entiere, et en un calcule du rapport CpG, du pourcentage de C+G, et du nombre de CpG par fenetre glissante de deux cents nucleotides ainsi qu'une conclsion sur la presence ou non d'ilots CpG. La procedure cree un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle engendre sous certaines conditions. Elle prend en arguments une description et la sequence correspondante au minimum. En troisieme argument elle prend la composition de la sequence (compo=) sous forme de dictionnaire, par defaut cette composition est calculee dans la procedure. De meme en quatrieme argument elle prend la liste des caracteres composants la sequence (keys=) (chacun ecrit entre guillemets), par defaut cette liste est calculee par la procedure."  
+    """Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui :
+    recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet d'effectuer
+    une etude de sequence nucleique. Cette etude consiste en un calcul du pourcentage de C+G et de CpG dans la sequence entiere, et en un 
+    calcule du rapport CpG, du pourcentage de C+G, et du nombre de CpG par fenetre glissante de deux cents nucleotides ainsi qu'une conclsion 
+    sur la presence ou non d'ilots CpG. La procedure cree un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur
+    de texte ou un tableur comme Excel) et une image des graphiques qu'elle engendre sous certaines conditions. Elle prend en arguments une 
+    description et la sequence correspondante au minimum. En troisieme argument elle prend la composition de la sequence (compo=) sous forme de 
+    dictionnaire, par defaut cette composition est calculee dans la procedure. De meme en quatrieme argument elle prend la liste des caracteres 
+    composants la sequence (keys=) (chacun ecrit entre guillemets), par defaut cette liste est calculee par la procedure."""  
+
+
     if compo==-1: # Permet une utilisation dans un cas plus general dans lequel l'utilisateur ne disposerait pas de la composition de la sequnece.
         compo=an.composition(seq)
     if keys==-1: # Permet une utilisation dans un cas plus general dans lequel l'utilisateur ne disposerait pas d'une liste des caractères composants la sequnece.
@@ -62,9 +72,27 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1):
         fichier=fichier.encode()
         taille=str(len(fichier))
         con.sendall(taille.encode())
-        rep=con.recv(255).decode()
+        rep=con.recv(255).decode()           
         if rep=="OK":
-            con.sendall(fichier)
+            if int(taille)> 30000: # Si la taille du fichier à envoyer est supérieur à 30kb
+                nb_file = (int(taille) // 30000) +1  # Nombre de fichiers à envoyer
+                con.sendall(str(nb_file).encode()) # Envoie du nombre de fichiers
+                rep=con.recv(255).decode()  # Confirmation de la réception
+                for i in range(0,nb_file-1): # Envoi par paquet de 30kb
+                    fichier_c = fichier[i*30000:(i+1)*30000]
+                    con.sendall(fichier_c)
+                    rep=con.recv(255).decode() # Confirmation de la réception
+                last_file_size = int(taille) - ((int(taille) // 30000)*30000) # Taille du dernier block 
+                last_file_size =  str(last_file_size)
+                con.sendall(last_file_size.encode()) # Envoi de la taille 
+                rep=con.recv(255).decode() # Confirmation de la réception
+                last_file = fichier[((int(taille) // 30000)*30000) : int(taille)] # Envoi du dernier block
+                con.sendall(last_file)
+                rep=con.recv(255).decode()
+
+            else :    
+                con.sendall(fichier)
+                rep=con.recv(255).decode()
 #---------------------------------------------#
  
     else:
@@ -86,7 +114,17 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1):
 
     
 def resultat_prot(des,seq,compo,keys,con): # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'annalyse de la sequence proteique. (Fonctionnement tres similaire a "resultat_ADN")
-    "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet d'effectuer une etude de sequence proteique. Cette etude consiste en un calcul du nombre d'acide amines hydrophobe presents, du nombre d'acide amines charges presents, et de la charge net de la sequence entriere, et en un calcul de l'hydrophobicite moyenne dans chaque fenetre glissante de neuf acides amines. La procedure cree un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle engendre sous certaines conditions. Elle prend en arguments une description et la sequence correspondante au minimum. En troisieme argument elle prend la composition de la sequence (compo=) sous forme de dictionnaire, par defaut cette composition est calculee dans la procedure. De meme en quatrieme argument elle prend la liste des caracteres composants la sequence (keys=) (chacun ecrit entre guillemets), par defaut cette liste est calculee par la procedure." 
+    """Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui :
+    recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet d'effectuer
+    une etude de sequence proteique. Cette etude consiste en un calcul du nombre d'acide amines hydrophobe presents, du nombre d'acide 
+    amines charges presents, et de la charge net de la sequence entriere, et en un calcul de l'hydrophobicite moyenne dans chaque fenetre
+    glissante de neuf acides amines. La procedure cree un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur
+    de texte ou un tableur comme Excel) et une image des graphiques qu'elle engendre sous certaines conditions. Elle prend en arguments une 
+    description et la sequence correspondante au minimum. En troisieme argument elle prend la composition de la sequence (compo=) sous forme 
+    de dictionnaire, par defaut cette composition est calculee dans la procedure. De meme en quatrieme argument elle prend la liste des caracteres 
+    composants la sequence (keys=) (chacun ecrit entre guillemets), par defaut cette liste est calculee par la procedure.""" 
+
+
     if compo==-1:  
         compo=ap.composition(seq)
     if keys==-1: 
@@ -142,12 +180,19 @@ def resultat_prot(des,seq,compo,keys,con): # Permet d'obtenir les tableaux de re
         if rep=="OK":
             con.sendall(fichier)
 #---------------------------------------------#
-
-
         
 
 def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'annalyse d'une sequence ADN ou proteique sous forme de tableaux et de graphiques  
-    "Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui : recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet de realiser une etude de sequence nucleique ou proteique au format fasta, cette etude constiste dans les deux cas en une evalusation de la composition de la sequence puis en une etude plus specifique au type de la sequence (se referer a resultat_prot.__doc__ pour plus de deatils sur l'etude des sequences proteique et a resultat_ADN.__doc__ pour les sequences nucleique). Cette procedure ne prend aucun argument en entree. Elle genere un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte ou un tableur comme Excel) et une image des graphiques qu'elle cree si l'utilisateur le souhaite et que le module 'matplotlib' est installe sur le poste de travail." 
+    """Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui :
+    recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet de 
+    realiser une etude de sequence nucleique ou proteique au format fasta, cette etude constiste dans les deux cas en une evalusation 
+    de la composition de la sequence puis en une etude plus specifique au type de la sequence (se referer a resultat_prot.__doc__ pour 
+    plus de deatils sur l'etude des sequences proteique et a resultat_ADN.__doc__ pour les sequences nucleique). Cette procedure ne prend 
+    aucun argument en entree. Elle genere un a deux fichiers de sortie : un fichier tabule (pouvant etre ouvert avec un editeur de texte
+    ou un tableur comme Excel) et une image des graphiques qu'elle cree si l'utilisateur le souhaite et que le module 'matplotlib' est installe
+    sur le poste de travail.""" 
+
+
     reponse="Initialisation" # Condition utile pour commencer l'etude d'une nouvelle fonction.
     type_seq=""
     premiere_analyse=True # variable servant a ne pas refaire l'annalyse d'une sequence deja effectuee.

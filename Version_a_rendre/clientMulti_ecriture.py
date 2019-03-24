@@ -29,6 +29,11 @@ else:
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 def creation_repertoire(des,s):
+    """Cette fonnction permet de créer un répertoire pour contenir les fichiers des résultats. Le répertoire crée se nommera Analyse_(Descrition),
+    la description est donnée en argument. Si le répertoire a déjà été crée lors d'une précédente analyse un Warning est envoyé à l'utilisateur.
+    Il pourra faire le choix d'approfondir l'analyse de la séquence ou de lancer le programme sur une autre séquence."""
+
+
     premiere_analyse=True
     try:
         os.mkdir("Analyse_"+des) # Permet de tester si le dossier '"Analyse_"+des' existe.
@@ -43,6 +48,10 @@ def creation_repertoire(des,s):
 
 
 def creation_fichier(nom_fichier) :
+    """Cette fonction permet de créer les fichiers textes contenant les résultats. Cette fonction prévient la redondance des fichiers,
+    ainsi chaque le nom de chaque fichier est unique. """
+
+
     nom_fichier=nom_fichier.replace("\n","")
     fichier_existe=True # Variable permettant de verifier que le fichier qu'on va creer n'en ecrase pas un preexistant.
     numero_fichier=0
@@ -60,6 +69,14 @@ def creation_fichier(nom_fichier) :
 
 
 def analyse_graph(nom_fichier, numero_fichier):
+    """ Cette fonction permet de tracer un histogramme représentant la composition d'une séquence nucléique ou protéique,
+    dont l'analyse a déjà été effectuée. Ainsi cette fonction prend en argument le nom du répertoire et clui du fichiers des 
+    résultats. Cette analyse requiert le module matplotlib.  Si cette librairie est installée, l'utilisateur pourra choisir 
+    de lancer ou non ce module graphique. Cette fonction ouvre une fenêtre graphique qui sera complétée par analyse_graph_adn
+    ou analyse_graph_prot selon la nature de la séquence.
+    """
+
+
     if plt_dispo: # Pour permettre a l'utilisateur de choisir s'il veut creer des graphiques ou non seulement dans le cas ou le module matplotlib est disponible et donc la creation de graphiques possible.
         plot_dispo=input(" \nSi vous souhaitez que le programme trace des graphiques en se basant \nsur l'analyse par fenetre (l'analyse sera plus longue), tapez 1 \nsinon, tapez 2 : \n\n>> ")
         while plot_dispo!="1" and plot_dispo!="2":
@@ -98,10 +115,17 @@ def analyse_graph(nom_fichier, numero_fichier):
 
 
 def analyse_graph_adn(nom_fichier, numero_fichier):
+    """ Cette fonction permet de tracer les graphiques des rapport CpG et des pourcentages C+G locaux (calculés par fenêtre d'analyse), 
+    pour une séquence d'ADN dont l'anlyse a déjà été réalisée. Cette fonction prend ainsi en argument le nom du répertoire et celui
+    du fichier des résultats.  Cette fonction requiert la librairie matplotlib. Les graphiques seront présentés sur la même fenêtre 
+    que celle générée par analyse_graph, puis sera enregistré sous le format .png.  """
+
     file=open(nom_fichier+"(%i).txt" % numero_fichier,'r') # Ouverture du fichier resultat en mode lecture.
     line=file.readline()[:-1].split("\t")
+    print('Line :', line)
     compo=line[3:]
     line=file.readline()[:-1].split("\t")
+    print('Line :', line)
     compo_nb=line[3:]
     compo_nb=[int(i) for i in compo_nb]
     for i in range(len(compo)):
@@ -110,8 +134,12 @@ def analyse_graph_adn(nom_fichier, numero_fichier):
     else:
         plt.text(-1,-sum(compo_nb)/5, "La sequence etudiee est composee de "+str(sum(compo_nb))+"\nnucleotides." , fontsize=10,color='b', bbox=dict(boxstyle="square,pad=0.3",fc="w",ec="b", lw=1))
     line=file.readline()[:-1].split("\t")
+    print("Line", line)
     line=file.readline()[:-1].split("\t")
+    print("Line", line)
     line=file.readline()[:-1].split("\t")
+    print("LIne", line)
+    print("Len de last line", line )
     if "Fenetres" in line : # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'annalyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
         ilot_CpG=False
         plt_rapportCpG=True
@@ -119,6 +147,7 @@ def analyse_graph_adn(nom_fichier, numero_fichier):
         rapportCpG=[]
         CGfenetre=[]
         line=file.readline()[:-1].split("\t")
+
         while line[0] != "":
             num_fenetre.append(int(line[0]))
             rapportCpG.append(float(line[3].replace(",",".")))
@@ -133,6 +162,7 @@ def analyse_graph_adn(nom_fichier, numero_fichier):
             else:
                 plt_rapportCpG=False
             line=file.readline()[:-1].split("\t")
+            print("LIne", line)
         if plt_rapportCpG: # Pour ne pas afficher le graph CpG si certaine valeur de rapportCpG valent "NA".
             plt.subplot(222) # Ensemble de commandes permettants de tracer les graphiques resultats. Ici pour determiner la place du graphique dasn la fenetre surgissante.
             plt.title("Analyse de la presence d'ilots CpG\npour chaque fenetres glissantes de 200 nucleotides\nde la sequence") # Pour ajouter un titre.
@@ -178,10 +208,40 @@ def ecriture_adn(s) :
         print(message)
         s.sendall("OK".encode())
         size=s.recv(1024).decode()
+        print("SIZE", size)
     else :
         size=message
-    s.sendall("OK".encode())
-    file=s.recv(int(size)).decode()
+        print("SIZE", size)
+        s.sendall("OK".encode())
+    if int(size) < 30000 :
+        file=s.recv(int(size)).decode()
+        s.sendall("OK".encode())
+        print('RECEIVE FILE ', file)
+    else : # Taille du fichier supérieur à 30Kb
+        file = ""
+        nb_file = s.recv(1024).decode()
+        s.sendall("OK".encode())
+        nb_file = int(nb_file)
+        for i in range(0,nb_file-1):
+            file_c = s.recv(30000).decode()
+            file += file_c
+            s.sendall("OK".encode())
+        last_size = s.recv(1024).decode()
+        s.sendall("OK".encode())
+        last_file = s.recv(int(last_size)).decode()
+        file += last_file
+        s.sendall("OK".encode())
+        """
+        file1=s.recv(30000).decode()
+        s.sendall("OK".encode())
+        print('RECEIVE FILE ', file1)
+        size2=s.recv(1024).decode()
+        print('SIZE 2 ', size2)
+        s.sendall("OK".encode())
+        file2=s.recv(int(size2)).decode()
+        s.sendall("OK".encode())
+        file = file1 + file2
+        """
     sortie.write(file)  
     sortie.close()
     plot_dispo=analyse_graph(nom_fichier, numero_fichier)
@@ -193,6 +253,12 @@ def ecriture_adn(s) :
 
 
 def analyse_graph_prot(nom_fichier, numero_fichier):
+    """ Cette fonction permet de tracer le graphique de l'hydrophobicité local (hydrophobicité par fenêtre d'analyse), 
+    pour une protéine dont l'anlyse a déjà été réalisée. Cette fonction prend ainsi en argument le nom du répertoire et celui
+    du fichier des résultats.  Cette fonction requiert la librairie matplotlib. Le graphique sera présenté sur la même fenêtre 
+    que celle générée par analyse_graph, puis sera enregistré sous le format .png.  """
+
+
     file=open(nom_fichier+"(%i).txt" % numero_fichier,'r') # Ouverture du fichier resultat en mode lecture.
     line=file.readline()[:-1].split("\t")
     line=file.readline()[:-1].split("\t")
