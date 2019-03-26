@@ -455,9 +455,8 @@ def Client():
             s.sendall(msg.encode())
         else:
             msg = input('>> ')
-            # Pour arreter le client python proprement
-            if msg=="exit()": # si on initialise pas msg avec raw_input : comme on utilise NC et pas telnet sur les machines BIM il faut mettre if msg=="\n" pour que ca fonctionne 
-                # mais la comme on initialise raw_input c'est bon puisque raw_input renvoi une chaine vide quand on tape entree
+            if msg=="exit()": 
+                # Pour arreter le client python proprement
                 break
             elif msg=="":
                 s.sendall("WARNING : empty message".encode())

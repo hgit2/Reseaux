@@ -6,15 +6,18 @@
 #                                                             Analyse de sequences fasta
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
+#Import de modules locaux :
 import recuperation_sequence_fasta as rs
 import analyse_ADN as an
 import analyse_proteine as ap
 import creation_seq_aleatoires as csa
+
+# Imports généraux :
 import socket
 
 def resultat_ADN(des,seq,con, compo=-1,keys=-1): 
-    # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'annalyse de la sequence ADN.
-    """Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui :
+    # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'analyse de la sequence ADN.
+    """Pour fonctionner, ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui :
     recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet d'effectuer
     une etude de sequence nucleique. Cette etude consiste en un calcul du pourcentage de C+G et de CpG dans la sequence entiere, et en un 
     calcule du rapport CpG, du pourcentage de C+G, et du nombre de CpG par fenetre glissante de deux cents nucleotides ainsi qu'une conclsion 
@@ -49,12 +52,12 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1):
         resultats+="\t"+str(compo[str(ele)])
         resultats=resultats.replace(".",",")
     fichier+=resultats
-    if len(seq)>=200: # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'annalyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
+    if len(seq)>=200: # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'analyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
         fichier+="\n \n \nFenetres\tC+G(%)\tCpG\tRapport CpG\tIlot CpG\n" # Redaction des entetes du tableau resultat consernant l'etude de la sequence par fenetres glissantes. 
         rapportCpG,CpGfenetre,CGfenetre=an.rapport_CpG_nb_CpG_contenu_C_et_G(seq, con, 200)# Recuperation du porcentage de C+G dans chaque fenetre, du nombre de "CG" et du rapport CpG.
         ilot_CpG=False
         plt_rapportCpG=True
-        for i,ele in enumerate(CGfenetre): # On parcours l'une des liste de resultat de l'annalyse par fenetre, elles ont toutes la meme taille.
+        for i,ele in enumerate(CGfenetre): # On parcours l'une des liste de resultat de l'analyse par fenetre, elles ont toutes la meme taille.
             num_fenetre.append(i+1)
             if rapportCpG[i]!="NA":
                 if rapportCpG[i]>=0.6 and CGfenetre[i]>=50: # Permet de verifier la presence d'ilot CpG.
@@ -106,7 +109,7 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1):
  
     else:
 #---------------Mise en reseau----------------#
-        con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'annalyse sur la sequence entiere a pu etre effectuee.\nLes analyses par fenetre requierent une sequence de longueur minimum 200 nucleotides.\n---------------\n".encode())
+        con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'analyse sur la sequence entiere a pu etre effectuee.\nLes analyses par fenetre requierent une sequence de longueur minimum 200 nucleotides.\n---------------\n".encode())
         con.recv(255).decode()
 #---------------------------------------------#
         
@@ -122,7 +125,7 @@ def resultat_ADN(des,seq,con, compo=-1,keys=-1):
         
 
     
-def resultat_prot(des,seq,compo,keys,con): # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'annalyse de la sequence proteique. (Fonctionnement tres similaire a "resultat_ADN")
+def resultat_prot(des,seq,compo,keys,con): # Permet d'obtenir les tableaux de resultats et les graphiques correspondants de l'analyse de la sequence proteique. (Fonctionnement tres similaire a "resultat_ADN")
     """Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui :
     recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet d'effectuer
     une etude de sequence proteique. Cette etude consiste en un calcul du nombre d'acide amines hydrophobe presents, du nombre d'acide 
@@ -204,7 +207,7 @@ def resultat_prot(des,seq,compo,keys,con): # Permet d'obtenir les tableaux de re
 
     else:
 #--------------Mise en reseau-----------------#
-        con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'analyse sur la sequence entiere a pu etre effectuee.\nLes annalyses par fenetre requierent une sequence de longueur minimum 9 acides amines.\n---------------\n".encode())
+        con.sendall("---------------\nAttention : Execution incomplete du programme.\n\nSeule l'analyse sur la sequence entiere a pu etre effectuee.\nLes analyses par fenetre requierent une sequence de longueur minimum 9 acides amines.\n---------------\n".encode())
         con.recv(255).decode()
 #---------------------------------------------#
         
@@ -218,7 +221,7 @@ def resultat_prot(des,seq,compo,keys,con): # Permet d'obtenir les tableaux de re
 #---------------------------------------------#
         
 
-def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'annalyse d'une sequence ADN ou proteique sous forme de tableaux et de graphiques  
+def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'analyse d'une sequence ADN ou proteique sous forme de tableaux et de graphiques  
     """Pour fonctionner ce module fait appel a cinq autres modules qui doivent se trouver dans le meme repertoire courant que lui :
     recuperation_sequence_fasta, lire_fasta, analyse_ADN, analyse_proteine, et creation_seq_aleatoires. Cette procedure permet de 
     realiser une etude de sequence nucleique ou proteique au format fasta, cette etude constiste dans les deux cas en une evalusation 
@@ -231,7 +234,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
 
     reponse="Initialisation" # Condition utile pour commencer l'etude d'une nouvelle fonction.
     type_seq=""
-    premiere_analyse=True # variable servant a ne pas refaire l'annalyse d'une sequence deja effectuee.
+    premiere_analyse=True # variable servant a ne pas refaire l'analyse d'une sequence deja effectuee.
     while reponse!="4":
         keys=[]
         valeurs=[]
@@ -297,6 +300,7 @@ def resultats_analyse_seq(con, addr): # Permet d'optenir les resultats de l'anna
                 continue
             elif reponse=="3":
                 reponse="Initialisation"
+                compo=ap.composition(seq)
                 seq_al=csa.seq_aleatoire(seq,compo) # Recupere une sequence de composition aleatoire de meme type et de meme longueur que "seq".
                 description="_seq_aleatoire"
                 sequence=seq_al # Ecrase "sequence" mais pas "seq" ce qui permet de garder en memoire la sequence de reference de chaque analyse dans la variable 'seq'

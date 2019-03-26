@@ -52,7 +52,7 @@ def handle_com(con, addr):
 
 
 class Serveur:
-    """Cette objet gère la connexion d'un serveur. Il reste à l'écoute en attendant la connexion de clients.
+    """Cette fonction gère la connexion d'un serveur. Il reste à l'écoute en attendant la connexion de clients.
     Dès que celle-ci est établi il fait appel à proced. """
 
     def __init__(self):
