@@ -123,10 +123,8 @@ def analyse_graph_adn(nom_fichier, numero_fichier):
 
     file=open(nom_fichier+"(%i).txt" % numero_fichier,'r') # Ouverture du fichier resultat en mode lecture.
     line=file.readline()[:-1].split("\t")
-    print('Line :', line)
     compo=line[3:]
     line=file.readline()[:-1].split("\t")
-    print('Line :', line)
     compo_nb=line[3:]
     compo_nb=[int(i) for i in compo_nb]
     for i in range(len(compo)):
@@ -135,12 +133,8 @@ def analyse_graph_adn(nom_fichier, numero_fichier):
     else:
         plt.text(-1,-sum(compo_nb)/5, "La sequence etudiee est composee de "+str(sum(compo_nb))+"\nnucleotides." , fontsize=10,color='b', bbox=dict(boxstyle="square,pad=0.3",fc="w",ec="b", lw=1))
     line=file.readline()[:-1].split("\t")
-    print("Line", line)
     line=file.readline()[:-1].split("\t")
-    print("Line", line)
     line=file.readline()[:-1].split("\t")
-    print("LIne", line)
-    print("Len de last line", line )
     if "Fenetres" in line : # Si la longueur de la sequence est inferieure a 200 nucleotides, cette partie de l'annalyse n'a pas pu etre effectuee car elle necessite des fenetres glissantes de 200 nucleotides.
         ilot_CpG=False
         plt_rapportCpG=True
@@ -163,7 +157,6 @@ def analyse_graph_adn(nom_fichier, numero_fichier):
             else:
                 plt_rapportCpG=False
             line=file.readline()[:-1].split("\t")
-            print("LIne", line)
         if plt_rapportCpG: # Pour ne pas afficher le graph CpG si certaine valeur de rapportCpG valent "NA".
             plt.subplot(222) # Ensemble de commandes permettants de tracer les graphiques resultats. Ici pour determiner la place du graphique dasn la fenetre surgissante.
             plt.title("Analyse de la presence d'ilots CpG\npour chaque fenetres glissantes de 200 nucleotides\nde la sequence") # Pour ajouter un titre.
@@ -365,7 +358,7 @@ def ecriture_proteine(s) :
 
 
 
-def envoie_fasta(description,seq) :
+def envoie_fasta(description,seq,s) :
     "Cette fonction envoie au serveur des données fasta stockées en local."
 
 
@@ -465,7 +458,7 @@ def Client():
                 s.sendall(msg.encode())
                 file_name = msg
                 description,seq = lecture_fasta_loc(file_name)
-                envoie_fasta(description,seq)
+                envoie_fasta(description,seq,s)
             else:        
             # envoi puis reception de la reponse
                 s.sendall(msg.encode())
